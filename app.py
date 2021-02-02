@@ -297,28 +297,28 @@ def ModificarActividad(parameters, row,ventana):
 
     descripcion = row[5] if parameters[0] == '' else parameters[0] # Verificacion descripcion
 
-    if len(parameters[1]) != 10: # Verificacion del formato deseado para fecha
-        messagebox.showinfo(message="Debes ingresar una fecha con un formato valido.", title="Mind your Study", parent=ventana)
-        return 
+    if parameters[1] != '':
+        if len(parameters[1]) != 10: # Verificacion del formato deseado para fecha
+            messagebox.showinfo(message="Debes ingresar una fecha con un formato valido.", title="Mind your Study", parent=ventana)
+            return 
 
-    try : #Verificacion Fecha valida
-        year,month,day = parameters[1].split('-')
-        datetime.datetime(int(year),int(month),int(day))
-    except ValueError :
-        messagebox.showinfo(message="Debes ingresar una fecha valida.", title="Mind your Study", parent=ventana)
-        return
-    
+        try : #Verificacion Fecha valida
+            year,month,day = parameters[1].split('-')
+            datetime.datetime(int(year),int(month),int(day))
+        except ValueError :
+            messagebox.showinfo(message="Debes ingresar una fecha valida.", title="Mind your Study", parent=ventana)
+            return
+
+    fecha = row[3] + '-' + row[2] + '-' + row[1] if parameters[1] == '' else parameters[1] # Verificacion descripcion
     hora = row[8] if parameters[2] == '' else parameters[2]
-    print(parameters[3])
     prioridad = parameters[3].translate({ord(i):None for i in "()',"})
     tipo = parameters[4].translate({ord(i):None for i in "()',"})
     
     # Fin validacion de datos
 
-    RegistroActividad((descripcion, parameters[1], hora, prioridad, tipo, parameters[5], parameters[6]),'M')
+    RegistroActividad((descripcion, fecha, hora, prioridad, tipo, parameters[5], parameters[6]),'M')
     MostrarActividad()
     messagebox.showinfo(message="Se ha modificado la actividad correctamente.", title="Mind your Study", parent=app)
-
 # Modulo que se conecta con la base de datos
 
 def RunQuery(query, parameters = ()):

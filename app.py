@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter.constants import FLAT, GROOVE, SOLID
 import tkinter.font as font
 import sqlite3
-
+#edit
 app = tk.Tk()
 app.configure(background='#EAEDED')
 app.title("Mind your Study")

@@ -97,8 +97,86 @@ def xstr(s):
 # Modulos de interfaz grafica para la seccion Asignatura
 
 def MostrarAsignatura():
-    global buttons
+    global buttons, contenido
     EliminarBotones(buttons)
+
+    b = tk.Button(contenido, text="Agregar Asignatura", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=80,y=420)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Eliminar Asignatura", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=80,y=480)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Modificar Asignatura", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=350,y=420)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Modificar Estado", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=360,y=480)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    asig_list = list(RunQuery("SELECT ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
+
+    asig = ['{}'.format(*opcion) for opcion in asig_list] 
+
+    opcion_asig = tk.StringVar(contenido, value = asig[0])
+    nueva_asig = tk.OptionMenu(contenido, opcion_asig, *asig)
+    nueva_asig.config(font=("", 13, 'bold'))
+    nueva_asig["highlightthickness"]=0
+    nueva_asig.place(x=40,y=25)
+    buttons.append(nueva_asig)
+
+    container = tk.Frame(contenido)
+    canvas = tk.Canvas(container, width=490, height=300)
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, relief=GROOVE)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    container.place(x=40,y=80)
+    canvas.pack(side="left", fill="both")
+    scrollbar.pack(side="right", fill="y")
+
+    b = tk.Button(contenido, text="Seleccionar", command = lambda: DatosAsignatura(scrollable_frame, opcion_asig.get()), relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=350,y=25)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac" 
+    buttons.append(b)
+
+    buttons.append(container)
+    buttons.append(canvas)
+    buttons.append(scrollbar)
+    buttons.append(scrollable_frame)
+
+def DatosAsignatura(frame, asig_nom):
+    rows = list(RunQuery("SELECT * FROM ASIGNATURA WHERE ASI_NOM = '" + asig_nom +"'"))
+    k = rows[0]
+    
+    # Asignatura
+    tk.Label(frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    # Descripcion
+    tk.Label(frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    # Nombre profesor
+    tk.Label(frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
+    # Correo profesor
+    tk.Label(frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
 
 # Modulos de interfaz grafica para la seccion Actividad
 # 

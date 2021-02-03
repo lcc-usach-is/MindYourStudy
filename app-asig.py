@@ -245,7 +245,7 @@ def IngresarModificarAsignatura(ventana, seleccion, rows): # Hay que eliminar lo
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     canvas.configure(xscrollcommand=scrollbar.set)
 
-    tk.Label(scrollable_frame, text = 'Has seleccionado una actividad con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+    tk.Label(scrollable_frame, text = 'Has seleccionado una asignatura con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
 
     # Asignatura
     tk.Label(scrollable_frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")

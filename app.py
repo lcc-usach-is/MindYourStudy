@@ -5,6 +5,7 @@ from tkinter import messagebox
 import tkinter.font as font
 import datetime
 import sqlite3
+import re #importa modulo para expresiones regulares
 
 app = tk.Tk()
 app.configure(background='#EAEDED')
@@ -14,6 +15,8 @@ app.resizable(False, False)
 app.iconbitmap("favicon.ico")
 
 db_name = 'MindYourStudy.db'
+
+regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$' #formato de correo
 
 buttons = [] # Lista que guarda elementos creados para despues ser borrados al cambiar de seccion
 
@@ -28,6 +31,8 @@ def HolaMundo():
 def BotonSeccion(canvas, texto,funcion, xpos, ypos, paddingx = 0):
     b = tk.Button(canvas, text=texto, command = funcion, relief = SOLID, font=("", 20, 'bold'), bd=3, padx=paddingx)
     b.place(x=xpos,y=ypos)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
 
     return b
 
@@ -112,7 +117,7 @@ def MostrarAsignatura():
     b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
-    b = tk.Button(contenido, text="Modificar Asignatura", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b = tk.Button(contenido, text="Modificar Asignatura", command = MostrarModificarAsignatura, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=350,y=420)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
@@ -123,6 +128,8 @@ def MostrarAsignatura():
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
     buttons.append(b)
+
+    #Asignatura
 
     asig_list = list(RunQuery("SELECT ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
 
@@ -155,7 +162,7 @@ def MostrarAsignatura():
     scrollbar.pack(side="right", fill="y")
 
     b = tk.Button(contenido, text="Seleccionar", command = lambda: DatosAsignatura(scrollable_frame, opcion_asig.get()), relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=350,y=25)
+    b.place(x=380,y=25)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac" 
     buttons.append(b)
@@ -168,15 +175,136 @@ def MostrarAsignatura():
 def DatosAsignatura(frame, asig_nom):
     rows = list(RunQuery("SELECT * FROM ASIGNATURA WHERE ASI_NOM = '" + asig_nom +"'"))
     k = rows[0]
-    
+
     # Asignatura
     tk.Label(frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
-    # Descripcion
+    # Descripcion antigua
     tk.Label(frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
-    # Nombre profesor
+    # Fecha antigua
     tk.Label(frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
-    # Correo profesor
+    # Hora inicio
     tk.Label(frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+
+def MostrarModificarAsignatura():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Modificar Asignatura")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    rows = list(RunQuery("SELECT * FROM ASIGNATURA WHERE ASI_EST = '1'"))
+
+    b = tk.Label(ventana, text="Selecciona la asignatura a modificar:",font=("", 20, 'bold'),justify="left")
+    b.place(x=40,y=40)
+    lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=95)
+    
+    for k in range(len(rows)-1,-1,-1):
+        i = rows[k]
+        lista.insert(0,'  '+i[1] + ': ' + i[2])
+    
+    a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarAsignatura(ventana, lista.curselection(), rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=435)
+    
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def IngresarModificarAsignatura(ventana, seleccion, rows): # Hay que eliminar los label y entry usados en esta funcion
+    global buttons_ventana
+    print(seleccion)
+    try:
+        rows[seleccion[0]]
+    except IndexError as e:
+        messagebox.showinfo(message="Debes seleccionar una asignatura", title="Mind your Study", parent=ventana)
+        return
+
+    EliminarBotones(buttons_ventana)
+
+    k = rows[seleccion[0]]
+    
+    container = tk.Frame(ventana)
+    canvas = tk.Canvas(container, width=490, height=200)
+    scrollbar = tk.Scrollbar(container, orient="horizontal", command=canvas.xview)
+    scrollable_frame = tk.Frame(canvas, relief=GROOVE)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(xscrollcommand=scrollbar.set)
+
+    tk.Label(scrollable_frame, text = 'Has seleccionado una actividad con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+
+    # Asignatura
+    tk.Label(scrollable_frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    # Descripcion antigua
+    tk.Label(scrollable_frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    # Nombre profesor
+    tk.Label(scrollable_frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
+    # Correo profesor
+    tk.Label(scrollable_frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    
+    container.grid(row=1, column = 0, padx=20, pady=20,ipadx=125)
+    canvas.pack(side="top", fill="x")
+    scrollbar.pack(side="bottom", fill="x")
+
+    frame2  = tk.Frame(ventana)
+    frame2.grid(row=3, column = 0, padx=20, sticky="ew")
+    tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+    
+    # Asignatura
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    nueva_asig = tk.Entry(frame2)
+    nueva_asig.grid(row = 1, column = 1, columnspan=3, ipadx = 120)
+    # Descripcion 
+    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    nueva_descripcion = tk.Entry(frame2 )
+    nueva_descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)
+    # Nombre profesor
+    tk.Label(frame2, text =  'Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w")
+    nuevo_profesor = tk.Entry(frame2 )
+    nuevo_profesor.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
+    # Correo profesor 
+    tk.Label(frame2, text =  'Correo Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    nuevo_correo = tk.Entry(frame2 )
+    nuevo_correo.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
+
+    a = tk.Button(ventana, text="Modificar asignatura", command = lambda: ModificarAsignatura((nueva_asig.get(),nueva_descripcion.get(), nuevo_profesor.get(),nuevo_correo.get()), k,ventana), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=20, y=500)
+
+def ModificarAsignatura(parameters, row,ventana):
+    global app
+    
+    # Validacion de los datos
+
+    asignatura = row[1] if parameters[0] == '' else parameters[0]
+    descripcion = row[2] if parameters[1] == '' else parameters[1] # Verificacion descripcion
+    nom_profesor = row[3] if parameters[2] == '' else parameters[2]
+    mail_profesor = row[4] if parameters[3] == '' else parameters[3] 
+
+    if(re.search(regex,parameters[3])):  
+        print(mail_profesor)
+    else:  
+        messagebox.showinfo(message="Debes ingresar un correo valido.", title="Mind your Study", parent=ventana)
+        return
+    
+    # Fin validacion de datos
+
+    RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, row[5], row[0]),'M')
+    MostrarAsignatura()
+    messagebox.showinfo(message="Se ha modificado la asignatura correctamente.", title="Mind your Study", parent=app)
 
 # Modulos de interfaz grafica para la seccion Actividad
 # 
@@ -349,7 +477,7 @@ def IngresarModificarActividad(ventana, seleccion, rows): # Hay que eliminar los
     tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="w" )
     # Hora inicio
     tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
-    nueva_hora = tk.Entry(frame2)
+    nueva_hora = tk.Entry(frame2) 
     nueva_hora.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
     # Prioridad
     tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="w")
@@ -375,28 +503,28 @@ def ModificarActividad(parameters, row,ventana):
 
     descripcion = row[5] if parameters[0] == '' else parameters[0] # Verificacion descripcion
 
-    if parameters[1] != '':
-        if len(parameters[1]) != 10: # Verificacion del formato deseado para fecha
-            messagebox.showinfo(message="Debes ingresar una fecha con un formato valido.", title="Mind your Study", parent=ventana)
-            return 
+    if len(parameters[1]) != 10: # Verificacion del formato deseado para fecha
+        messagebox.showinfo(message="Debes ingresar una fecha con un formato valido.", title="Mind your Study", parent=ventana)
+        return 
 
-        try : #Verificacion Fecha valida
-            year,month,day = parameters[1].split('-')
-            datetime.datetime(int(year),int(month),int(day))
-        except ValueError :
-            messagebox.showinfo(message="Debes ingresar una fecha valida.", title="Mind your Study", parent=ventana)
-            return
-
-    fecha = row[3] + '-' + row[2] + '-' + row[1] if parameters[1] == '' else parameters[1] # Verificacion descripcion
+    try : #Verificacion Fecha valida
+        year,month,day = parameters[1].split('-')
+        datetime.datetime(int(year),int(month),int(day))
+    except ValueError :
+        messagebox.showinfo(message="Debes ingresar una fecha valida.", title="Mind your Study", parent=ventana)
+        return
+    
     hora = row[8] if parameters[2] == '' else parameters[2]
+    print(parameters[3])
     prioridad = parameters[3].translate({ord(i):None for i in "()',"})
     tipo = parameters[4].translate({ord(i):None for i in "()',"})
     
     # Fin validacion de datos
 
-    RegistroActividad((descripcion, fecha, hora, prioridad, tipo, parameters[5], parameters[6]),'M')
+    RegistroActividad((descripcion, parameters[1], hora, prioridad, tipo, parameters[5], parameters[6]),'M')
     MostrarActividad()
     messagebox.showinfo(message="Se ha modificado la actividad correctamente.", title="Mind your Study", parent=app)
+
 # Modulo que se conecta con la base de datos
 
 def RunQuery(query, parameters = ()):
@@ -427,7 +555,14 @@ def RegistroBloque(b, case):
     HolaMundo()
 
 def RegistroAsignatura(a, case):
-    HolaMundo()
+    if case == 'C':
+        query = 'INSERT INTO ASIGNATURA VALUES(NULL,?,?,?,?,?,?,?)'
+    elif case == 'M':
+        query = 'UPDATE ASIGNATURA SET ASI_NOM = ?, ASI_DESC = ?, ASI_NOM_PROF = ?, ASI_MAIL_PROF = ?, ASI_EST = ? WHERE ASI_ID = ?'
+    elif case == 'E':
+        query = 'DELETE FROM ACTIVIDAD WHERE ACT_ID = ? AND ACT_ID_ASI = ?'
+    
+    RunQuery(query, a)
 
 def RegistroNota(n, case):
     HolaMundo()
@@ -546,3 +681,4 @@ BotonSeccion(secciones,"Asignatura", MostrarAsignatura, 10, 485,5)
 # MainLoop
 
 app.mainloop()
+

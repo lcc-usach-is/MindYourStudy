@@ -294,7 +294,7 @@ def ModificarAsignatura(parameters, row,ventana):
     nom_profesor = row[3] if parameters[2] == '' else parameters[2]
     mail_profesor = row[4] if parameters[3] == '' else parameters[3] 
 
-    if(re.search(regex,parameters[3])):  
+    if(re.search(regex,mail_profesor)):  
         print(mail_profesor)
     else:  
         messagebox.showinfo(message="Debes ingresar un correo valido.", title="Mind your Study", parent=ventana)

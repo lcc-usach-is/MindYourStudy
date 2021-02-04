@@ -5,6 +5,7 @@ from tkinter import messagebox
 import tkinter.font as font
 import datetime
 import sqlite3
+import webbrowser
 import re #importa modulo para expresiones regulares
 
 app = tk.Tk()
@@ -94,6 +95,57 @@ def xstr(s):
     if s is None:
         return ''
     return str(s)
+
+#### FUNCIONES PARA EL MENU BAR ####
+def callback(text):
+    webbrowser.open_new(text)
+
+def VentanaAbout():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Acerca de Mind your Study")
+    ventana.geometry("400x250")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    tabControl = ttk.Notebook(ventana)
+
+    tab1 = ttk.Frame(tabControl)
+    tab2 = ttk.Frame(tabControl)
+
+    tabControl.add(tab1, text='Acerca de')
+    tabControl.add(tab2, text='Autor')
+    tabControl.pack(expand=1, fill="both")
+
+    frame = tk.Frame(tab1)
+    frame.grid(row=0, column = 1, padx=10, pady=10, sticky="ew")
+    ttk.Label(frame, text ="Mind your Study", font=("", 15, 'bold'),justify="center").grid(row = 0, column = 0,columnspan=2, sticky="w")
+
+    ttk.Label(tab1, text ="Version:").grid(column = 0,row = 1,padx = 5,pady = 10, sticky="e")
+
+    #### TBD SACAR VERSION ACTUAL DESDE LA BASE DE DATOS CON UNA QUERY ####
+    ttk.Label(tab1, text ="x.x.x").grid(column = 1,row = 1,padx = 0,pady = 10, sticky="w")
+    #######################################################################
+
+    ttk.Label(tab1, text ="Pagina web:").grid(column = 0,row = 2,padx = 5,pady = 10, sticky="e")
+    link1 = tk.Label(tab1, text ="github.com/lcc-usach-is/MindYourStudy", fg = 'blue', cursor="hand2")
+    link1.grid(column = 1,row = 2,padx = 0,pady = 10, sticky="w")
+    link1.bind("<Button-1>", lambda e: callback("https://github.com/lcc-usach-is/MindYourStudy"))
+
+    ttk.Label(tab1, text ="Licencia:").grid(column = 0,row = 3,padx = 5,pady = 10, sticky="e")
+    link2 = tk.Label(tab1, text ="GNU General Public License v3.0", fg = 'blue', cursor="hand2")
+    link2.grid(column = 1,row = 3,padx = 0,pady = 10, sticky="w")
+    link2.bind("<Button-1>", lambda e: callback("https://raw.githubusercontent.com/lcc-usach-is/MindYourStudy/main/LICENSE"))
+
+    a = tk.Button(ventana, text="OK", command = ventana.destroy, relief = SOLID, bd=1, padx=10)
+    a.place(x=330,y=210)
+    buttons_ventana.append(a)
+
+    ventanas.append(ventana)
+    ventana.mainloop()
 
 ###################################################################################
 
@@ -245,7 +297,7 @@ def IngresarModificarAsignatura(ventana, seleccion, rows): # Hay que eliminar lo
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     canvas.configure(xscrollcommand=scrollbar.set)
 
-    tk.Label(scrollable_frame, text = 'Has seleccionado una asignatura con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+    tk.Label(scrollable_frame, text = 'Has seleccionado una actividad con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
 
     # Asignatura
     tk.Label(scrollable_frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
@@ -663,6 +715,16 @@ secciones.place(x=4,y=8)
 contenido = tk.Canvas(app, width = 580, height = 560, bg="#D4E6F1", relief = tk.RAISED, highlightthickness=3, highlightbackground="black")
 contenido.place(x=204,y=8)
 
+#Barra Menu
+
+menubar = tk.Menu(app)
+app.config(menu = menubar)
+
+helpmenu = tk.Menu(menubar, tearoff = 0)
+helpmenu.add_command(label = "Acerca de...", command = VentanaAbout)
+
+menubar.add_cascade(label = "Ayuda",menu=helpmenu)
+
 # Seccion
 
 image = tk.PhotoImage(file="image.gif")
@@ -681,4 +743,3 @@ BotonSeccion(secciones,"Asignatura", MostrarAsignatura, 10, 485,5)
 # MainLoop
 
 app.mainloop()
-

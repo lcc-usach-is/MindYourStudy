@@ -168,13 +168,13 @@ def MostrarAsignatura():
     EliminarBotones(buttons)
     EliminarBotones(buttons_ventana)
     EliminarVentanas(ventanas)
-    b = tk.Button(contenido, text="Agregar Asignatura", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b = tk.Button(contenido, text="Agregar Asignatura", command = IngresarCrearAsignatura, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=80,y=420)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
-    b = tk.Button(contenido, text="Eliminar Asignatura", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b = tk.Button(contenido, text="Eliminar Asignatura", command = MostrarEliminarAsignatura, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=80,y=480)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
@@ -186,7 +186,7 @@ def MostrarAsignatura():
     b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
-    b = tk.Button(contenido, text="Modificar Estado", command = HolaMundo, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b = tk.Button(contenido, text="Cambiar Estado", command = MostrarCambiarEstado, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=360,y=480)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
@@ -257,6 +257,100 @@ def DatosAsignatura(frame, asig_nom):
     b = tk.Label(frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left")
     b.grid(row = 4, column = 0,sticky="w")
     buttons_ventana.append(b)
+
+# Crear Asignatura
+
+#Crear Asignatura
+
+def IngresarCrearAsignatura(): # falta eliminar los objetos usados
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Crear Asignatura")
+    ventana.geometry("640x350")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    frame2  = tk.Frame(ventana)
+    frame2.grid(row=3, column = 0, padx=30, pady=30, sticky="ew")
+    tk.Label(frame2, text = 'Ingrese los datos de la asignatura que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
+    
+    # Asignatura
+    tk.Label(frame2, text =  'Asignatura(*): ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
+    asignatura = tk.Entry(frame2)
+    asignatura.grid(row = 1, column = 1, columnspan=3, padx=20, ipadx = 120)  
+    # Descripcion 
+    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="e")
+    descripcion = tk.Entry(frame2)
+    descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)  
+    # Nombre profesor
+    tk.Label(frame2, text =  'Nombre profesor(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0, padx=(10,0), sticky="e" )
+    nom_profesor = tk.Entry(frame2 )
+    nom_profesor.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
+    # correo profesor
+    tk.Label(frame2, text =  'Correo profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
+    mail_profesor = tk.Entry(frame2)
+    mail_profesor.grid(row = 4, column = 1, columnspan=3, ipadx = 120)
+
+    tk.Label(frame2, text ='(*) espacio obligatorio', font=("", 13), justify="left").grid(row=5, column=0, padx=10, sticky="w")
+
+    a = tk.Button(ventana, text="Crear asignatura", command = lambda:  CrearAsignatura(ventana, (asignatura.get(), descripcion.get(), nom_profesor.get(), mail_profesor.get())), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=30, y=262)
+
+    ventanas.append(ventana)
+    ventana.mainloop()
+
+def CrearAsignatura(ventana, parameters): # Falta verificar que la fecha sea proxima a la actual
+    global app
+    
+    # Validacion de los datos
+    MaxAsi = 100
+    MaxDes = 200
+    MaxProf = 100
+
+    #Asignatura
+    if len(parameters[0]) > MaxAsi:
+        messagebox.showinfo(message="El nombre de la asignatura no puede superar los "+ MaxAsi +" caracteres. Hay " + str(len(parameters[0])) + " caracteres actualmente.", title="Mind your Study", parent=ventana)
+        return
+    
+    if parameters[0] != '':
+        asignatura = parameters[0] 
+    else:
+        messagebox.showinfo(message="Debes ingresar el nombre de la asignatura.", title="Mind your Study", parent=ventana)
+        return
+
+    #Descripcion
+    if len(parameters[1]) > MaxDes:
+        messagebox.showinfo(message="Debes ingresar una descripcion de menos de "+ MaxDes + " caracteres. Hay " + str(len(parameters[1])) + " caracteres actualmente.", title="Mind your Study", parent=ventana)
+        return
+    descripcion = parameters[1] 
+    
+    #Nombre profesor
+    if len(parameters[2]) > 100:
+        messagebox.showinfo(message="El nombre de la asignatura no puede superar los "+ MaxProf +" caracteres. Hay " + str(len(parameters[2])) + " caracteres actualmente.", title="Mind your Study", parent=ventana)
+        return
+    
+    if parameters[2] != '':
+        nom_profesor = parameters[2] 
+    else:
+        messagebox.showinfo(message="Debes ingresar el nombre del/la profesor/ra.", title="Mind your Study", parent=ventana)
+        return
+    
+    #Mail profesor
+    if not(re.search(regex,parameters[3])):  
+        messagebox.showinfo(message="Debes ingresar un correo valido.", title="Mind your Study", parent=ventana)
+        return
+    mail_profesor = parameters[3]
+    
+    # Fin validacion de datos
+
+    RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, '1'),'C')
+    MostrarAsignatura()
+    messagebox.showinfo(message="Se ha creado la asignatura correctamente.", title="Mind your Study", parent=app)
+
+# Modificar Asignatura
 
 def MostrarModificarAsignatura():
     global buttons_ventana, ventanas
@@ -367,9 +461,7 @@ def ModificarAsignatura(parameters, row,ventana):
     nom_profesor = row[3] if parameters[2] == '' else parameters[2]
     mail_profesor = row[4] if parameters[3] == '' else parameters[3] 
 
-    if(re.search(regex,mail_profesor)):  
-        print(mail_profesor)
-    else:  
+    if not(re.search(regex,mail_profesor)):   
         messagebox.showinfo(message="Debes ingresar un correo valido.", title="Mind your Study", parent=ventana)
         return
     
@@ -378,6 +470,133 @@ def ModificarAsignatura(parameters, row,ventana):
     RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, row[5], row[0]),'M')
     MostrarAsignatura()
     messagebox.showinfo(message="Se ha modificado la asignatura correctamente.", title="Mind your Study", parent=app)
+
+# Cambiar estado
+
+def MostrarCambiarEstado():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Cambiar Estado")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    rows = list(RunQuery("SELECT * FROM ASIGNATURA"))
+
+    b = tk.Label(ventana, text="Selecciona la asignatura para cambiar su estado actual:",font=("", 15, 'bold'),justify="left")
+    b.place(x=40,y=30)
+
+    lista = tk.Listbox(ventana, height=12, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=105)
+
+    for k in range(len(rows)-1,-1,-1):
+        i = rows[k]
+        if(i[5] == 1):
+            lista.insert(0,'  '+i[1] + ': ACTIVA')
+        else:
+            lista.insert(0,'  '+i[1] + ': NO ACTIVA')
+    
+    a = tk.Button(ventana, text="Seleccionar", command = lambda: CambiarEstado(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=500)
+
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+# Cambiar Estado
+
+def CambiarEstado(ventana, k, seleccion):
+    global app
+
+    rows = k[seleccion[0]]
+
+    try:
+        rows
+    except IndexError as e:
+        messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
+        return
+
+    asignatura = rows[1]
+    descripcion = rows[2]
+    nom_profesor = rows[3]
+    mail_profesor = rows[4]
+
+    if(rows[5] == 1):
+        nuevo_estado = 0
+        respuesta = messagebox.askyesno(message="La asignatura "+ asignatura + " cambiara a estado no activo ¿Continuar?", title="Cambiar Estado", parent = ventana)
+    else:
+        nuevo_estado = 1
+        respuesta = messagebox.askyesno(message="La asignatura "+ asignatura + " cambiara a estado activo ¿Continuar?", title="Cambiar Estado", parent = ventana)
+
+    if not respuesta:
+        return
+
+    RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, nuevo_estado, rows[0]),'M')
+    MostrarAsignatura()
+    messagebox.showinfo(message="Se ha cambiado el estado de la asignatura correctamente.", title="Mind your Study", parent=app)
+
+
+# Eliminar asignatura
+
+def MostrarEliminarAsignatura():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Eliminar Asignatura")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    rows = list(RunQuery("SELECT ASI_ID, ASI_NOM, ASI_DESC, ASI_NOM_PROF, ASI_MAIL_PROF, ASI_EST FROM ASIGNATURA ORDER BY ASI_ID"))
+
+    b = tk.Label(ventana, text="Selecciona la asignatura a eliminar:",font=("", 20, 'bold'),justify="left")
+    b.place(x=40,y=40)
+    lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=95)
+    
+    for k in range(len(rows)-1,-1,-1):
+        i = rows[k]
+        lista.insert(0,' '+i[1] + ': ' + i[2])
+    
+    a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarAsignatura(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=435)
+    
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def EliminarAsignatura(ventana, rows, seleccion):
+    global buttons_ventana, app
+
+    try:
+        rows[seleccion[0]]
+    except IndexError as e:
+        messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
+        return
+    
+    respuesta = messagebox.askyesno(message="¿Desea eliminar la asignatura?", title="Eliminar Asignatura", parent = ventana)
+
+    if not respuesta:
+        return
+    
+    k = rows[seleccion[0]]
+
+    print(k[0])
+
+    RegistroAsignatura((k[0],),'E')
+    MostrarAsignatura()
+    messagebox.showinfo(message="Se ha eliminado la asignatura correctamente.", title="Mind your Study", parent=app)
 
 # Modulos de interfaz grafica para la seccion Actividad #
 
@@ -462,7 +681,7 @@ def MostrarCrearActividad():
     EliminarVentanas(ventanas)
     ventana = tk.Toplevel(app, bg="#D4E6F1")
     ventana.title("Crear Actividad")
-    ventana.geometry("800x580")
+    ventana.geometry("820x580")
     ventana.resizable(False, False)
     ventana.iconbitmap("favicon.ico")
     ventana.focus()
@@ -500,33 +719,33 @@ def IngresarCrearActividad(ventana, seleccion, rows): # falta eliminar los objet
     k = rows[seleccion[0]]
     frame2  = tk.Frame(ventana)
     frame2.grid(row=3, column = 0, padx=30, pady=30, sticky="ew")
-    tk.Label(frame2, text = 'Ingrese los datos de la actividad que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, sticky="w")
+    tk.Label(frame2, text = 'Ingrese los datos de la actividad que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
     
     # Asignatura
-    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
     tk.Entry(frame2, textvariable = tk.StringVar(frame2, value = k[0]), state = 'readonly').grid(row = 1, column = 1, columnspan=3, ipadx = 120)
 
     # Descripcion 
-    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, padx=(10,0), sticky="e")
     descripcion = tk.Entry(frame2)
     descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)  
     # Fecha 
-    tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
+    tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     fecha = tk.Entry(frame2 )
     fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="w" )
+    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5, padx=10, sticky="w" )
     # Hora inicio
-    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     hora = tk.Entry(frame2)
     hora.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
     # Prioridad
-    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
     lista_prioridad = list(RunQuery('SELECT PRI_NIVEL FROM PRIORIDAD'))
     opcion_prioridad = tk.StringVar(frame2, value = '')
     prioridad = tk.OptionMenu(frame2, opcion_prioridad, *lista_prioridad)
     prioridad.grid(row=5, column=1, sticky="w")
     # Tipo
-    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="e")
     lista_tipo = list(RunQuery('SELECT TACT_TIPO FROM TIPO_ACTIVIDAD'))
     opcion_tipo = tk.StringVar(frame2, value = '')
     tipo = tk.OptionMenu(frame2, opcion_tipo, *lista_tipo)
@@ -828,7 +1047,7 @@ def RegistroAsignatura(a, case):
     elif case == 'M':
         query = 'UPDATE ASIGNATURA SET ASI_NOM = ?, ASI_DESC = ?, ASI_NOM_PROF = ?, ASI_MAIL_PROF = ?, ASI_EST = ? WHERE ASI_ID = ?'
     elif case == 'E':
-        query = 'DELETE FROM ACTIVIDAD WHERE ACT_ID = ? AND ACT_ID_ASI = ?'
+        query = 'DELETE FROM ASIGNATURA WHERE ASI_ID = ?'
     
     RunQuery(query, a)
 

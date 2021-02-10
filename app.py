@@ -615,7 +615,7 @@ def MostrarResumen():
     filtro["highlightthickness"] = 0
     filtro.config(font=("", 15, 'bold')) 
     filtro.place(x=135,y=455)
-    buttons.append(periodo)
+    buttons.append(filtro)
 
     container = tk.Frame(contenido)
     canvas = tk.Canvas(container, width=490, height=350)
@@ -692,8 +692,6 @@ def DatosResumen(frame, periodo, filtro):
 # Fin modulos de interfaz grafica para la seccion Resumen #
 
 # Modulos de interfaz grafica para la seccion Asignatura #
-
-# Modulos de interfaz grafica para la seccion Asignatura
 
 def MostrarAsignatura():
     global buttons, contenido, ventanas, buttons_ventana

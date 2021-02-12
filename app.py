@@ -267,6 +267,10 @@ def MostrarCrearActividad():
     
     a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarCrearActividad(ventana, lista.curselection(), rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=40,y=435)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
     
     buttons_ventana.append(b)
     buttons_ventana.append(lista)
@@ -288,41 +292,46 @@ def IngresarCrearActividad(ventana, seleccion, rows): # falta eliminar los objet
 
     k = rows[seleccion[0]]
     frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=30, pady=30, sticky="ew")
-    tk.Label(frame2, text = 'Ingrese los datos de la actividad que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, sticky="w")
+    frame2.grid(row=3, column = 0, padx=15, pady=30, sticky="ew")
+    tk.Label(frame2, text = 'Ingrese los datos de la actividad que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
     
     # Asignatura
-    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
     tk.Entry(frame2, textvariable = tk.StringVar(frame2, value = k[0]), state = 'readonly').grid(row = 1, column = 1, columnspan=3, ipadx = 120)
 
     # Descripcion 
-    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Descripcion(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="e")
     descripcion = tk.Entry(frame2)
     descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)  
     # Fecha 
-    tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
+    tk.Label(frame2, text =  'Fecha(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     fecha = tk.Entry(frame2 )
     fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="w" )
+    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="e" )
     # Hora inicio
-    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     hora = tk.Entry(frame2)
     hora.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
     # Prioridad
-    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Prioridad(*): ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
     lista_prioridad = list(RunQuery('SELECT PRI_NIVEL FROM PRIORIDAD'))
     opcion_prioridad = tk.StringVar(frame2, value = '')
     prioridad = tk.OptionMenu(frame2, opcion_prioridad, *lista_prioridad)
     prioridad.grid(row=5, column=1, sticky="w")
     # Tipo
-    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Tipo(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="e")
     lista_tipo = list(RunQuery('SELECT TACT_TIPO FROM TIPO_ACTIVIDAD'))
     opcion_tipo = tk.StringVar(frame2, value = '')
     tipo = tk.OptionMenu(frame2, opcion_tipo, *lista_tipo)
     tipo.grid(row=6, column=1, sticky="w")
 
+    tk.Label(frame2, text ='(*) espacio obligatorio', font=("", 13), justify="left").grid(row=7, column=0, padx=10, sticky="w")
+
     a = tk.Button(ventana, text="Crear actividad", command = lambda:  CrearActividad(ventana, (k[1], descripcion.get(), fecha.get(), hora.get(), opcion_prioridad.get(), opcion_tipo.get())), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=30, y=262)
+    a.place(x=30, y=290)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=230,y=290)
 
     ventanas.append(ventana)
     ventana.mainloop()
@@ -401,6 +410,10 @@ def MostrarModificarActividad(rows): # Es necesario recibir rows?
     
     a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarActividad(ventana, lista.curselection(), rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=40,y=435)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
     
     buttons_ventana.append(b)
     buttons_ventana.append(lista)
@@ -442,7 +455,7 @@ def IngresarModificarActividad(ventana, seleccion, rows): # Hay que eliminar los
     # Asignatura
     tk.Label(scrollable_frame, text =  'Asignatura: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
     # Descripcion antigua
-    tk.Label(scrollable_frame, text =  'Descripcion: ' + k[5], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")  
+    tk.Label(scrollable_frame, text =  'Descripcion: ' + k[5], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, sticky="w")  
     # Fecha antigua
     tk.Label(scrollable_frame, text =  'Fecha: ' + k[3] + '-' + k[2] + '-' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )   
     # Hora inicio
@@ -461,29 +474,29 @@ def IngresarModificarActividad(ventana, seleccion, rows): # Hay que eliminar los
     tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
     
     # Asignatura
-    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
     tk.Entry(frame2, textvariable = tk.StringVar(frame2, value = k[4]), state = 'readonly').grid(row = 1, column = 1, columnspan=3, ipadx = 120)   
     # Descripcion 
-    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, padx=(10,0),sticky="e")
     nueva_descripcion = tk.Entry(frame2 )
     nueva_descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)  
     # Fecha 
-    tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
+    tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     nueva_fecha = tk.Entry(frame2 )
     nueva_fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="w" )
+    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="e" )
     # Hora inicio
-    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     nueva_hora = tk.Entry(frame2)
     nueva_hora.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
     # Prioridad
-    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
     prioridad = list(RunQuery('SELECT PRI_NIVEL FROM PRIORIDAD'))
     opcion_prioridad = tk.StringVar(frame2, value = xstr(k[6]))
     nueva_prioridad = tk.OptionMenu(frame2, opcion_prioridad, *prioridad)
     nueva_prioridad.grid(row=5, column=1, sticky="w")
     # Tipo
-    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="e")
     tipo = list(RunQuery('SELECT TACT_TIPO FROM TIPO_ACTIVIDAD'))
 
     opcion_tipo = tk.StringVar(frame2, value = k[7])
@@ -492,6 +505,9 @@ def IngresarModificarActividad(ventana, seleccion, rows): # Hay que eliminar los
 
     a = tk.Button(ventana, text="Modificar actividad", command = lambda: ModificarActividad(ventana, (nueva_descripcion.get(),nueva_fecha.get(), nueva_hora.get(),opcion_prioridad.get(), opcion_tipo.get(),k[9],k[10]), k), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=20, y=500)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=270,y=500)
     
 def ModificarActividad(ventana, parameters, row): # Falta verificar que la fecha sea proxima a la actual
     global app
@@ -552,6 +568,9 @@ def MostrarEliminarActividad():
     
     a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarActividad(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=40,y=435)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
     
     buttons_ventana.append(b)
     buttons_ventana.append(lista)
@@ -773,19 +792,19 @@ def DatosAsignatura(frame, asig_nom):
 
     # Asignatura
     b = tk.Label(frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left")
-    b.grid(row = 1, column = 0,sticky="w")
+    b.grid(row = 1, column = 0, pady=5,sticky="w")
     buttons_ventana.append(b)
     # Descripcion
     b = tk.Label(frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left")
-    b.grid(row = 2, column = 0,sticky="w")
+    b.grid(row = 2, column = 0, pady=5, sticky="w")
     buttons_ventana.append(b)
     # Profesor
     b = tk.Label(frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left")
-    b.grid(row = 3, column = 0,sticky="w" )
+    b.grid(row = 3, column = 0, pady=5, sticky="w" )
     buttons_ventana.append(b)
     # Correo Profesor
     b = tk.Label(frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left")
-    b.grid(row = 4, column = 0,sticky="w")
+    b.grid(row = 4, column = 0, pady=5, sticky="w")
     buttons_ventana.append(b)
 
 # Crear Asignatura
@@ -828,6 +847,12 @@ def IngresarCrearAsignatura(): # falta eliminar los objetos usados
 
     a = tk.Button(ventana, text="Crear asignatura", command = lambda:  CrearAsignatura(ventana, (asignatura.get(), descripcion.get(), nom_profesor.get(), mail_profesor.get())), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=30, y=262)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=250,y=262)
+    buttons_ventana.append(a)
+
 
     ventanas.append(ventana)
     ventana.mainloop()
@@ -906,10 +931,14 @@ def MostrarModificarAsignatura():
     
     a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarAsignatura(ventana, lista.curselection(), rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=40,y=435)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
+    buttons_ventana.append(a)
     
     buttons_ventana.append(b)
     buttons_ventana.append(lista)
-    buttons_ventana.append(a)
     ventanas.append(ventana)
 
     ventana.mainloop()
@@ -944,41 +973,44 @@ def IngresarModificarAsignatura(ventana, seleccion, rows): # Hay que eliminar lo
     tk.Label(scrollable_frame, text = 'Has seleccionado una asignatura con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
 
     # Asignatura
-    tk.Label(scrollable_frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    tk.Label(scrollable_frame, text =  'Asignatura: ' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0, padx=5, sticky="w")
     # Descripcion antigua
-    tk.Label(scrollable_frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    tk.Label(scrollable_frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, padx=5, sticky="w")
     # Nombre profesor
-    tk.Label(scrollable_frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )
+    tk.Label(scrollable_frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0, padx=5, sticky="w" )
     # Correo profesor
-    tk.Label(scrollable_frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    tk.Label(scrollable_frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=5, sticky="w")
     
     container.grid(row=1, column = 0, padx=20, pady=20,ipadx=125)
     canvas.pack(side="top", fill="x")
     scrollbar.pack(side="bottom", fill="x")
 
     frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=20, sticky="ew")
-    tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+    frame2.grid(row=3, column = 0, padx=20, ipady=5, sticky="ew")
+    tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, padx=5, pady=(5,0), sticky="w")
     
     # Asignatura, crear un option menu, para no tener problemas con las claves primarias.
-    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
     nueva_asig = tk.Entry(frame2)
     nueva_asig.grid(row = 1, column = 1, columnspan=3, ipadx = 120)
     # Descripcion 
-    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Descripcion: ' , font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="e")
     nueva_descripcion = tk.Entry(frame2 )
     nueva_descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)
     # Nombre profesor
-    tk.Label(frame2, text =  'Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
     nuevo_profesor = tk.Entry(frame2 )
     nuevo_profesor.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
     # Correo profesor 
-    tk.Label(frame2, text =  'Correo Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")
+    tk.Label(frame2, text =  'Correo Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=(10,0), sticky="e")
     nuevo_correo = tk.Entry(frame2 )
     nuevo_correo.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
 
     a = tk.Button(ventana, text="Modificar asignatura", command = lambda: ModificarAsignatura((nueva_asig.get(),nueva_descripcion.get(), nuevo_profesor.get(),nuevo_correo.get()), k, ventana), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=20, y=500)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=280,y=500)
 
 def ModificarAsignatura(parameters, row,ventana):
     global app
@@ -1003,9 +1035,9 @@ def ModificarAsignatura(parameters, row,ventana):
 # Cambiar estado
 
 def MostrarCambiarEstado():
-    global buttons_ventana, ventanas
-    EliminarBotones(buttons_ventana)
+    global ventanas
     EliminarVentanas(ventanas)
+    
     ventana = tk.Toplevel(app, bg="#D4E6F1")
     ventana.title("Cambiar Estado")
     ventana.geometry("800x580")
@@ -1031,9 +1063,9 @@ def MostrarCambiarEstado():
     a = tk.Button(ventana, text="Seleccionar", command = lambda: CambiarEstado(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=40,y=500)
 
-    buttons_ventana.append(b)
-    buttons_ventana.append(lista)
-    buttons_ventana.append(a)
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=500)
+
     ventanas.append(ventana)
 
     ventana.mainloop()
@@ -1094,6 +1126,9 @@ def MostrarEliminarAsignatura():
     
     a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarAsignatura(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=40,y=435)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
     
     buttons_ventana.append(b)
     buttons_ventana.append(lista)

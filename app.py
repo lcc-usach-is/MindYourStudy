@@ -216,7 +216,6 @@ def IngresarBloque():
     tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
 
     asig = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
-    #asig = ['{}'.format(*opcion) for opcion in asig_list]
 
     opcion_asignatura = tk.StringVar(frame2, value = xstr(asig[0]))
     nueva_asignatura = tk.OptionMenu(frame2, opcion_asignatura, *asig)
@@ -236,7 +235,6 @@ def IngresarBloque():
     tk.Label(frame2, text =  'Hora: ', font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
 
     hora = list(RunQuery("SELECT BL_ID, BL_INI, BL_FIN FROM TIPO_BLOQUE"))
-    #hora = ['{}'.format(*opcion) for opcion in hora_list]
 
     opcion_hora = tk.StringVar(frame2, value = xstr(hora[0]))
     nuevo_hora = tk.OptionMenu(frame2, opcion_hora, *hora)
@@ -259,7 +257,7 @@ def Crearbloque(ventana, parameters):
     dia_sem = parameters[1]
     bl_id = parameters[2][1]
 
-    if(RegistroBloque((bl_id, asi_id, dia_sem), 'C') == -1):
+    if(GestionAsignatura('C', (bl_id, asi_id, dia_sem), None, None) == -1):
         m = "Ya existe un bloque en esa posicion."
         messagebox.showinfo(message= m, title="Mind your Study", parent=ventana)
         return
@@ -281,9 +279,9 @@ def MostrarEliminarBloque():
     ventana.iconbitmap("favicon.ico")
     ventana.focus()
 
-    rows = list(RunQuery("SELECT * FROM BLOQUE"))
+    rows = list(RunQuery("SELECT * FROM BLOQUE ORDER BY BL_DIA_SEM"))
     asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
-    bl_list = list(RunQuery("SELECT BL_ID, BL_INI FROM TIPO_BLOQUE"))
+    bl_list = list(RunQuery("SELECT BL_ID, BL_INI FROM TIPO_BLOQUE ORDER BY BL_INI"))
 
     b = tk.Label(ventana, text="Selecciona el bloque a eliminar:",font=("", 20, 'bold'),justify="left")
     b.place(x=40,y=40)
@@ -334,10 +332,8 @@ def EliminarBloque(ventana, rows, seleccion):
     
     k = rows[seleccion[0]]
 
-    print(k[0])
-    print(k[2])
+    GestionAsignatura('E', (k[0], k[2]), None, None)
 
-    RegistroBloque((k[0],k[2]),'E')
     MostrarHorario()
     messagebox.showinfo(message="Se ha eliminado el bloque correctamente.", title="Mind your Study", parent=app)
 
@@ -350,7 +346,7 @@ def EliminarTodoBloques(ventana, rows):
         return
             
     for k in rows:
-        RegistroBloque((k[0],k[2]),'E')
+        GestionAsignatura('E', (k[0], k[2]), None, None)
 
     MostrarHorario()
     messagebox.showinfo(message="Se han eliminado todos los bloques.", title="Mind your Study", parent=app)
@@ -1670,7 +1666,7 @@ def CrearAsignatura(ventana, parameters): # Falta verificar que la fecha sea pro
     
     # Fin validacion de datos
 
-    RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, '1'),'C')
+    GestionAsignatura('C', None, (asignatura, descripcion, nom_profesor, mail_profesor, '1'), None)
     MostrarAsignatura()
     messagebox.showinfo(message="Se ha creado la asignatura correctamente.", title="Mind your Study", parent=app)
 
@@ -1797,7 +1793,7 @@ def ModificarAsignatura(parameters, row,ventana):
     
     # Fin validacion de datos
 
-    RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, row[5], row[0]),'M')
+    GestionAsignatura('M', None, (asignatura, descripcion, nom_profesor, mail_profesor, row[5], row[0]), None)
     MostrarAsignatura()
     messagebox.showinfo(message="Se ha modificado la asignatura correctamente.", title="Mind your Study", parent=app)
 
@@ -1850,6 +1846,7 @@ def CambiarEstado(ventana, k, seleccion):
         messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
         return
 
+    asi_id = rows[0]
     asignatura = rows[1]
     descripcion = rows[2]
     nom_profesor = rows[3]
@@ -1864,8 +1861,8 @@ def CambiarEstado(ventana, k, seleccion):
 
     if not respuesta:
         return
-
-    RegistroAsignatura((asignatura, descripcion, nom_profesor, mail_profesor, nuevo_estado, rows[0]),'M')
+    
+    GestionAsignatura('M', None, (asignatura, descripcion, nom_profesor, mail_profesor, nuevo_estado, asi_id), None)
     MostrarAsignatura()
     messagebox.showinfo(message="Se ha cambiado el estado de la asignatura correctamente.", title="Mind your Study", parent=app)
 
@@ -1922,7 +1919,7 @@ def EliminarAsignatura(ventana, rows, seleccion):
     
     k = rows[seleccion[0]]
 
-    RegistroAsignatura((k[0],),'E')
+    GestionAsignatura('E', None, (k[0],), None)
     MostrarAsignatura()
     messagebox.showinfo(message="Se ha eliminado la asignatura correctamente.", title="Mind your Study", parent=app)
 
@@ -1938,11 +1935,11 @@ def EliminarAsignatura(ventana, rows, seleccion):
 
 def GestionAsignatura(case, bloque, asignatura, nota):
     if bloque != None:
-        RegistroBloque(bloque, case)
+        return RegistroBloque(bloque, case)
     elif asignatura != None:
-        RegistroAsignatura(asignatura,case)
+        return RegistroAsignatura(asignatura,case)
     else:
-        RegistroNota(nota, case)
+        return RegistroNota(nota, case)
 
 def RegistroBloque(b, case):
     if case == 'C':

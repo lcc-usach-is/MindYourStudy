@@ -1,3 +1,4 @@
+from sqlite3.dbapi2 import threadsafety, version
 import tkinter as tk
 from tkinter import ttk
 from tkinter.constants import ANCHOR, FLAT, GROOVE, SOLID
@@ -138,8 +139,9 @@ def VentanaAbout():
     #version
     ttk.Label(tab1, text ="Version:").grid(column = 0,row = 1,padx = 5,pady = 10, sticky="e")
 
-    #### TBD SACAR VERSION ACTUAL DESDE LA BASE DE DATOS CON UNA QUERY ####
-    ttk.Label(tab1, text ="x.x.x").grid(column = 1,row = 1,padx = 0,pady = 10, sticky="w")
+    version = list(RunQuery("SELECT max(VERSION_NUM) FROM VERSION"))
+    str_version = version[0][0]
+    ttk.Label(tab1, text =str_version).grid(column = 1,row = 1,padx = 0,pady = 10, sticky="w")
     #######################################################################
 
     #pagina web
@@ -170,6 +172,263 @@ def VentanaAbout():
 ###################################################################################
 
 ## INICIO MODULOS QUE SON PARTE DE LA INTERFAZ GRAFICA ##
+
+# Modulos de interfaz grafica para la seccion Inicio #
+
+def MostrarInicio():    
+    global buttons,contenido,buttons_ventana,ventanas
+    EliminarBotones(buttons)
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+
+    b = tk.Label(contenido, text= "Bienvenidos a \n Mind your Study",font=("", 35, 'bold'),justify="center", bg = "#D4E6F1")
+    b.place(x=100, y=100)
+    buttons.append(b)
+
+
+    version = list(RunQuery("SELECT max(VERSION_NUM) FROM VERSION"))
+    str_version = version[0][0]
+
+    b = tk.Label(contenido, text= "Version " + str_version,font=("", 17, ""),justify="center", bg = "#D4E6F1")
+    b.place(x=240, y=223)
+    buttons.append(b)
+
+# Fin modulos de interfaz grafica para la seccion Inicio # 
+
+# Modulos de interfaz grafica para la seccion Horario #
+
+def IngresarBloque():
+    global ventanas
+    EliminarVentanas(ventanas)
+
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Crear Bloque")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    frame2  = tk.Frame(ventana)
+    frame2.grid(row=3, column = 0, padx=20, pady=20,sticky="we")
+    tk.Label(frame2, text = 'Ingrese los datos que corresponden al bloque: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+
+    # Lista Asignaturas
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
+
+    asig = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
+    #asig = ['{}'.format(*opcion) for opcion in asig_list]
+
+    opcion_asignatura = tk.StringVar(frame2, value = xstr(asig[0]))
+    nueva_asignatura = tk.OptionMenu(frame2, opcion_asignatura, *asig)
+    nueva_asignatura.grid(row=1, column=1, sticky="w")
+
+    # Lista Dia Semana
+    tk.Label(frame2, text =  'Dia de la semana: ', font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="e")
+
+    dia_list = list(RunQuery("SELECT DIA_NOMBRE FROM DIA WHERE DIA_ID >'0'"))
+    dia = ['{}'.format(*opcion) for opcion in dia_list]
+
+    opcion_dia = tk.StringVar(frame2, value = xstr(dia[0]))
+    nuevo_dia = tk.OptionMenu(frame2, opcion_dia, *dia)
+    nuevo_dia.grid(row=2, column=1, sticky="w")
+
+    # Lista hora
+    tk.Label(frame2, text =  'Hora: ', font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
+
+    hora = list(RunQuery("SELECT BL_ID, BL_INI, BL_FIN FROM TIPO_BLOQUE"))
+    #hora = ['{}'.format(*opcion) for opcion in hora_list]
+
+    opcion_hora = tk.StringVar(frame2, value = xstr(hora[0]))
+    nuevo_hora = tk.OptionMenu(frame2, opcion_hora, *hora)
+    nuevo_hora.grid(row=3, column=1, sticky="w")
+
+    a = tk.Button(ventana, text="Crear Bloque", command = lambda:  Crearbloque(ventana, (opcion_asignatura.get(), opcion_dia.get(), opcion_hora.get())), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=30, y=435)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
+
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def Crearbloque(ventana, parameters):
+
+    asi_id = parameters[0][1]
+    dia_sem = parameters[1]
+    bl_id = parameters[2][1]
+
+    if(RegistroBloque((bl_id, asi_id, dia_sem), 'C') == -1):
+        m = "Ya existe un bloque en esa posicion."
+        messagebox.showinfo(message= m, title="Mind your Study", parent=ventana)
+        return
+    
+    MostrarHorario()
+
+    m = "Se ha creado el bloque correctamente."
+    messagebox.showinfo(message= m, title="Mind your Study", parent=app)
+
+# Eliminar bloque
+def MostrarEliminarBloque():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Eliminar Bloque")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    rows = list(RunQuery("SELECT * FROM BLOQUE"))
+    asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
+    bl_list = list(RunQuery("SELECT BL_ID, BL_INI FROM TIPO_BLOQUE"))
+
+    b = tk.Label(ventana, text="Selecciona el bloque a eliminar:",font=("", 20, 'bold'),justify="left")
+    b.place(x=40,y=40)
+    lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=95)
+    
+    for k in range(len(rows)-1,-1,-1):
+        i = rows[k]
+        for asig in asig_list:
+            if i[1] == asig[0]:
+                asignatura = asig[1]
+
+        for bl in bl_list:
+            if i[0] == bl[0]:
+                hora = bl[1]
+
+        lista.insert(0, i[2] + ' a las ' + hora + ': ' + asignatura)
+    
+    a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarBloque(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=435)
+
+    a = tk.Button(ventana, text="Borrar todo", command= lambda: EliminarTodoBloques(ventana, rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=205,y=435)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=365,y=435)
+    
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def EliminarBloque(ventana, rows, seleccion):
+    global app
+    
+    try:
+        rows[seleccion[0]]
+    except IndexError:
+        messagebox.showinfo(message="Debes seleccionar un bloque.", title="Mind your Study", parent=ventana)
+        return
+    
+    respuesta = messagebox.askyesno(message="¿Desea eliminar el bloque?", title="Eliminar Bloque", parent = ventana)
+
+    if not respuesta:
+        return
+    
+    k = rows[seleccion[0]]
+
+    print(k[0])
+    print(k[2])
+
+    RegistroBloque((k[0],k[2]),'E')
+    MostrarHorario()
+    messagebox.showinfo(message="Se ha eliminado el bloque correctamente.", title="Mind your Study", parent=app)
+
+def EliminarTodoBloques(ventana, rows):
+    global app
+
+    respuesta = messagebox.askyesno(message="¿Deseas eliminar todos los bloques?", title="Eliminar Bloque", parent = ventana)
+    
+    if not respuesta:
+        return
+            
+    for k in rows:
+        RegistroBloque((k[0],k[2]),'E')
+
+    MostrarHorario()
+    messagebox.showinfo(message="Se han eliminado todos los bloques.", title="Mind your Study", parent=app)
+
+def MostrarHorario():
+    global ventanas, buttons, contenido
+    EliminarBotones(buttons)
+    EliminarVentanas(ventanas)
+
+    container = tk.Frame(contenido)
+    canvas = tk.Canvas(container, width=500, height=450)
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    bloques = list(RunQuery("SELECT * FROM BLOQUE")) 
+    asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    for i in range(1,7):
+        bl_dia = []
+        for bloque in bloques: #filtra todos los bloques que corresponden al dia i
+            if(bloque[2] == DiaSemana(i)):
+                bl_dia.append(bloque)
+        bloques = [b for b in bloques if b not in bl_dia] #se borran los bloques que ya se guardaron en bl_dia
+        for j in range (1,11):
+            t = ""
+            w = 12
+            h = 3
+            color = '#E4F2F9'
+            if j == 1:
+                t = DiaSemana(i)
+                h = 1
+                color = '#CEE9F7'
+            elif bl_dia != []:
+                for bloque in bl_dia:
+                    if(bloque[0]+1 == j):
+                        color = '#fbf8be'
+                        for asig in asig_list:
+                            if(bloque[1] == asig[0]):
+                                t = asig[1]
+
+            b = tk.Button(scrollable_frame, text=t, font=("", 8), wraplength=80, width=w, height=h, command = HolaMundo, relief = tk.GROOVE)
+            b.grid(row=j,column=i)
+            b["bg"] = color
+            buttons.append(b)
+            
+
+    container.place(x=40,y=30)
+    canvas.pack(side="left", fill="both")
+    scrollbar.pack(side="right", fill="y")
+
+    b = tk.Button(contenido, text="Agregar Bloque", command = IngresarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=80,y=510)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Eliminar Bloque", command = MostrarEliminarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=350,y=510)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    buttons.append(container)
+    buttons.append(canvas)
+    buttons.append(scrollbar)
+    buttons.append(scrollable_frame)
+
+# Fin modulos de interfaz grafica para la seccion Horario #
 
 # Modulos de interfaz grafica para la seccion Actividad #
 
@@ -210,32 +469,38 @@ def MostrarActividad():
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     canvas.configure(yscrollcommand=scrollbar.set)
 
-    mesActual = rows[0][2]
-    anyoActual = rows[0][3]
-    
-    b = tk.Label(scrollable_frame, text=MesAnyo(mesActual) + ' ' + anyoActual,font=("", 20, 'bold'),justify="left")
-    b.grid(row=0,column=0,sticky="w")
+    if rows != []:
+        mesActual = rows[0][2]
+        anyoActual = rows[0][3]
+        
+        b = tk.Label(scrollable_frame, text=MesAnyo(mesActual) + ' ' + anyoActual,font=("", 20, 'bold'),justify="left")
+        b.grid(row=0,column=0,sticky="w")
 
-    buttons.append(b)
-    
-    r = 1
+        buttons.append(b)
+        
+        r = 1
 
-    for k in range(0,len(rows)):
+        for k in range(0,len(rows)):
 
-        if mesActual != rows[k][2] or anyoActual != rows[k][3]:
-            
-            mesActual = rows[k][2]
-            anyoActual = rows[k][3]
-            
-            b = tk.Label(scrollable_frame, text= MesAnyo(mesActual) + ' ' + anyoActual,font=("", 20, 'bold') ,justify="left")
-            b.grid(row=r,column=0, sticky='w')
-            buttons.append(b)
+            if mesActual != rows[k][2] or anyoActual != rows[k][3]:
+                
+                mesActual = rows[k][2]
+                anyoActual = rows[k][3]
+                
+                b = tk.Label(scrollable_frame, text= MesAnyo(mesActual) + ' ' + anyoActual,font=("", 20, 'bold') ,justify="left")
+                b.grid(row=r,column=0, sticky='w')
+                buttons.append(b)
+                r = r + 1
+
+            a = tk.Label(scrollable_frame, text=rows[k][0] + ' ' + rows[k][1] + ': ' + rows[k][4] + ', ' + rows[k][5], wraplengt=475,justify="left")
+            a.grid(row=r,column=0, sticky='w')
+            buttons.append(a)
             r = r + 1
+    else:
+        b = tk.Label(scrollable_frame, text="Actualmente no tienes actividades.",font=("", 15, 'bold'),justify="left")
+        b.grid(row=0,column=0,sticky="w")
 
-        a = tk.Label(scrollable_frame, text=rows[k][0] + ' ' + rows[k][1] + ': ' + rows[k][4] + ', ' + rows[k][5], wraplengt=475,justify="left")
-        a.grid(row=r,column=0, sticky='w')
-        buttons.append(a)
-        r = r + 1
+        buttons.append(b)        
     
     container.place(x=40,y=40)
     canvas.pack(side="left", fill="both")
@@ -310,7 +575,7 @@ def IngresarCrearActividad(ventana, seleccion, rows): # falta eliminar los objet
     tk.Label(frame2, text =  'Fecha(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     fecha = tk.Entry(frame2 )
     fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="e" )
+    tk.Label(frame2, text =  'Formato: AAAA-MM-DD' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
     # Hora inicio
     tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     hora = tk.Entry(frame2)
@@ -487,7 +752,7 @@ def IngresarModificarActividad(ventana, seleccion, rows): # Hay que eliminar los
     tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     nueva_fecha = tk.Entry(frame2 )
     nueva_fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD, ejemplo: 2021-01-09' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="e" )
+    tk.Label(frame2, text =  'Formato: AAAA-MM-DD' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
     # Hora inicio
     tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     nueva_hora = tk.Entry(frame2)
@@ -713,6 +978,504 @@ def DatosResumen(frame, periodo, filtro):
 
 # Fin modulos de interfaz grafica para la seccion Resumen #
 
+# Modulos de interfaz grafica para la seccion Nota #
+
+def MostrarNota():
+    global buttons, contenido, ventanas, buttons_ventana
+    EliminarBotones(buttons)
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    b = tk.Button(contenido, text="Agregar Nota", command = MostrarIngresarNota, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
+    b.place(x=80,y=450)
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Eliminar Nota", command = MostrarEliminarNota, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
+    b.place(x=80,y=510)
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Modificar Nota", command = MostrarModificarNota, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
+    b.place(x=350,y=450)
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Calcular Nota", command = ElegirCalcularNota, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
+    b.place(x=360,y=510)
+    buttons.append(b)
+
+    container = tk.Frame(contenido)
+    canvas = tk.Canvas(container, width=490, height=380)
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, relief=GROOVE)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    asignaturas = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = 1"))
+    notas = list(RunQuery("SELECT NOT_ID_ASI, NOT_TIPO, NOT_VAL FROM NOTA, ASIGNATURA WHERE NOT_ID_ASI = ASI_ID AND ASI_EST = 1 ORDER BY NOT_ID_ASI, NOT_TIPO"))
+    
+    if asignaturas != [] and notas != []:    
+        r = 0
+
+        for i in range(0,len(asignaturas)):
+            b = tk.Label(scrollable_frame, text=asignaturas[i][1],font=("", 14, 'bold'),justify="left")
+            b.grid(row=r,column=0,sticky="w")
+            buttons.append(b)
+
+            r = r + 1
+            tiene_notas = False
+
+            for j in range(0, len(notas)):
+                
+                if(asignaturas[i][0] == notas[j][0]):
+                    tiene_notas = True
+                    b = tk.Label(scrollable_frame, text="Nota " + notas[j][1] + ": " + str(notas[j][2]),font=("", 12, ''),justify="left")
+                    b.grid(row=r,column=0,sticky="w")
+                    buttons.append(b)
+                    r = r + 1
+
+
+
+            if tiene_notas == False:
+                b = tk.Label(scrollable_frame, text="- sin notas -",font=("", 12, ''),justify="left")
+                b.grid(row=r,column=0,sticky="w")
+                buttons.append(b)
+                r = r + 1                
+    else:
+        if asignaturas == []:
+            b = tk.Label(scrollable_frame, text="Actualmente no hay asignaturas activas.",font=("", 14, 'bold'),justify="left")
+        else:
+            b = tk.Label(scrollable_frame, text="Actualmente no hay notas.",font=("", 14, 'bold'),justify="left")
+
+        b.grid(row=0,column=0,sticky="w")
+
+        buttons.append(b)
+    
+    container.place(x=40,y=40)
+    canvas.pack(side="left", fill="both")
+    scrollbar.pack(side="right", fill="y")
+
+    buttons.append(container)
+    buttons.append(canvas)
+    buttons.append(scrollbar)
+    buttons.append(scrollable_frame)
+
+def MostrarIngresarNota():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Ingresar Nota")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    b = tk.Label(ventana, text="Selecciona la asignatura de la nota a ingresar:",font=("", 12, 'bold'),justify="left")
+    b.place(x=40,y=40)
+    lista = tk.Listbox(ventana, height=9, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=95)
+    asignaturas = list(RunQuery("SELECT ASI_NOM, ASI_ID FROM ASIGNATURA WHERE ASI_EST = '1'"))
+    for k in range(len(asignaturas)-1,-1,-1):
+        i = asignaturas[k]
+        lista.insert(0,'  '+ i[0])
+    
+    # Valor nota
+    b = tk.Label(ventana, text =  'Nota: ' , font=("", 12, 'bold'),justify="left")
+    b.place(x=40, y=300)
+    valor_nota = tk.Entry(ventana, font=('', 12, ''))
+    valor_nota.place(x = 150, y = 300)  
+    
+    # Tipo nota
+    b = tk.Label(ventana, text =  'Tipo Nota: ', font=("", 12, 'bold'),justify="left")
+    b.place(x=40, y = 350)
+    tipo_nota = list(RunQuery("SELECT TNOT_NOM FROM TIPO_NOTA"))
+    opcion_tipo_nota = tk.StringVar(ventana, value = '')
+    nuevo_tipo_nota = tk.OptionMenu(ventana, opcion_tipo_nota, *tipo_nota)
+    nuevo_tipo_nota.place(x=150, y = 350)
+
+
+    a = tk.Button(ventana, text="Ingresar Nota", command = lambda: IngresarNota(ventana, [lista.curselection(), valor_nota.get(), opcion_tipo_nota.get()], asignaturas), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=435)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=220,y=435)
+    
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def IngresarNota(ventana, parameters, asignatura):  
+    global app
+
+    # Validacion de los datos
+    try:
+        asignatura[parameters[0][0]]
+    except IndexError as e:
+        messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
+        return
+
+    id_asignatura = asignatura[parameters[0][0]][1]
+
+    try:
+        float(parameters[1])
+    except ValueError as e:
+        messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
+        return
+
+    nota = float(parameters[1])
+    if (type(nota) is (float or int)) and nota >= 1.0 and nota <= 7.0:
+        pass
+    else:        
+        messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
+        return
+
+    if parameters[2] != '':
+        tipo_nota = parameters[2].translate({ord(i):None for i in "()',"})
+    else:
+        messagebox.showinfo(message="Debes ingresar un tipo de nota.", title="Mind your Study", parent=ventana)
+        return
+            
+    # Fin validacion de datos
+
+    GestionAsignatura('C', None, None, (id_asignatura, tipo_nota, nota))
+    MostrarNota()
+    messagebox.showinfo(message="Se ha ingresado la nota correctamente.", title="Mind your Study", parent=app)
+    
+def MostrarModificarNota():
+    global buttons_ventana, ventanas, app
+
+    notas = list(RunQuery("SELECT NOT_ID , NOT_ID_ASI ,ASI_NOM, NOT_TIPO, NOT_VAL FROM NOTA, ASIGNATURA WHERE NOT_ID_ASI = ASI_ID AND ASI_EST = 1"))
+
+    if notas != []:    
+        EliminarBotones(buttons_ventana)
+        EliminarVentanas(ventanas)
+        ventana = tk.Toplevel(app, bg="#D4E6F1")
+        ventana.title("Modificar Actividad")
+        ventana.geometry("800x580")
+        ventana.resizable(False, False)
+        ventana.iconbitmap("favicon.ico")
+        ventana.focus()
+
+        b = tk.Label(ventana, text="Selecciona la nota a modificar:",font=("", 20, 'bold'),justify="left")
+        b.place(x=40,y=40)
+        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=40, y=95)
+
+        for k in range(len(notas)-1,-1,-1):
+            i = notas[k]
+            lista.insert(0,'  '+ i[2] + ': ' + i[3] + ', ' + str(i[4]))
+        
+        a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarNota(ventana, lista.curselection(), notas), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+        a.place(x=40,y=435)
+        buttons_ventana.append(a)
+
+        a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+        a.place(x=200,y=435)
+        
+        buttons_ventana.append(b)
+        buttons_ventana.append(lista)
+        buttons_ventana.append(a)
+        ventanas.append(ventana)
+        ventana.mainloop()
+    else:
+        messagebox.showinfo(message="No existen Notas que modificar.", title="Mind your Study", parent=app)
+        return
+
+def IngresarModificarNota(ventana, seleccion, rows):# Hay que eliminar los label y entry usados en esta funcion
+    global buttons_ventana
+
+    try:
+        rows[seleccion[0]]
+    except IndexError as e:
+        messagebox.showinfo(message="Debes seleccionar una nota.", title="Mind your Study", parent=ventana)
+        return
+
+    EliminarBotones(buttons_ventana)
+    
+    k = rows[seleccion[0]]
+
+    container = tk.Frame(ventana)
+    canvas = tk.Canvas(container, width=490, height=150)
+    scrollbar = tk.Scrollbar(container, orient="horizontal", command=canvas.xview)
+    scrollable_frame = tk.Frame(canvas, relief=GROOVE)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(xscrollcommand=scrollbar.set)
+
+    tk.Label(scrollable_frame, text = 'Has seleccionado una nota con los siguientes datos: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+
+    # Asignatura
+    tk.Label(scrollable_frame, text =  'Asignatura: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="w")
+    # Tipo nota antiguo
+    tk.Label(scrollable_frame, text =  'Tipo nota: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, sticky="w")  
+    # Valor nota antiguo
+    tk.Label(scrollable_frame, text =  'Valor nota: ' + str(k[4]), font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )  
+
+    container.grid(row=1, column = 0, padx=20, pady=20,ipadx=125)
+    canvas.pack(side="top", fill="x")
+    scrollbar.pack(side="bottom", fill="x")
+
+    frame2 = tk.Frame(ventana)
+    frame2.grid(row=3, column = 0, padx=20, sticky="we")
+    tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+    
+    # Asignatura
+    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
+    tk.Entry(frame2, textvariable = tk.StringVar(frame2, value = k[2]), state = 'readonly').grid(row = 1, column = 1, columnspan=3, ipadx = 120)  
+
+    # Valor nota
+    b = tk.Label(frame2, text =  'Nota: ' , font=("", 12, 'bold'),justify="left")
+    b.grid(row = 2, column = 0,sticky="e")
+    valor_nota = tk.Entry(frame2, font=('', 12, ''))
+    valor_nota.grid(row = 2, column = 1,sticky="nw") 
+    
+    # Tipo nota
+    b = tk.Label(frame2, text =  'Tipo Nota: ', font=("", 12, 'bold'),justify="left")
+    b.grid(row = 3, column = 0,sticky="e")
+    tipo_nota = list(RunQuery("SELECT TNOT_NOM FROM TIPO_NOTA"))
+    opcion_tipo_nota = tk.StringVar(frame2, value = k[3])
+    nuevo_tipo_nota = tk.OptionMenu(frame2, opcion_tipo_nota, *tipo_nota)
+    nuevo_tipo_nota.grid(row = 3, column = 1,sticky="nw")
+    
+    a = tk.Button(ventana, text="Modificar nota", command = lambda: ModificarNota(ventana, (k[1],opcion_tipo_nota.get(), valor_nota.get(),k[0]), k), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=20, y=370)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=270,y=370)
+
+def ModificarNota(ventana, parameters, row):
+    global app
+
+    # Validacion de datos
+
+    tipo_nota = parameters[1].translate({ord(i):None for i in "()',"})
+
+    if parameters[2] != '':
+        try:
+            float(parameters[2])
+        except ValueError as e:
+            messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
+            return
+
+        nota = float(parameters[2])
+        
+        if (type(nota) is (float or int)) and nota >= 1.0 and nota <= 7.0:
+            pass
+        else:        
+            messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
+            return
+    else:
+        nota = row[4]
+
+    # Fin validacion de datos
+
+    GestionAsignatura('M', None, None, (parameters[0], tipo_nota, nota, parameters[3]))
+    MostrarNota()
+    messagebox.showinfo(message="Se ha modificado la nota correctamente.", title="Mind your Study", parent=app)
+
+def MostrarEliminarNota():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Eliminar Nota")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    rows = list(RunQuery("SELECT NOT_ID, ASI_NOM, NOT_TIPO, NOT_VAL FROM NOTA, ASIGNATURA WHERE NOT_ID_ASI = ASI_ID AND ASI_EST = 1 ORDER BY NOT_ID_ASI, NOT_TIPO"))
+
+    b = tk.Label(ventana, text="Selecciona la Nota a eliminar:",font=("", 20, 'bold'),justify="left")
+    b.place(x=40,y=40)
+    lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=95)
+    
+    for k in range(len(rows)-1,-1,-1):
+        i = rows[k]
+        lista.insert(0,' '+i[1] + '. ' + i[2] + ': ' + str(i[3]))
+    
+    a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarNota(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=435)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=200,y=435)
+    
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def EliminarNota(ventana, rows, seleccion):
+    global buttons_ventana, app
+
+    try:
+        rows[seleccion[0]]
+    except IndexError as e:
+        messagebox.showinfo(message="Debes seleccionar una Nota.", title="Mind your Study", parent=ventana)
+        return
+    
+    respuesta = messagebox.askyesno(message="¿Desea eliminar la Nota?", title="Eliminar Actividad", parent = ventana)
+
+    if not respuesta:
+        return
+    
+    k = rows[seleccion[0]]
+
+    print(k[0])
+    GestionAsignatura('E', None, None, (str(k[0]),))
+    MostrarNota()
+    messagebox.showinfo(message="Se ha eliminado la actividad correctamente.", title="Mind your Study", parent=app)
+    
+def ElegirCalcularNota():
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+    EliminarVentanas(ventanas)
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Calcular Nota")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    b = tk.Label(ventana, text="Selecciona la asignatura de la nota que desee calcular:",font=("", 12, 'bold'),justify="left")
+    b.place(x=40,y=40)
+    lista = tk.Listbox(ventana, height=15, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
+    lista.place(x=40, y=95)
+    asignaturas = list(RunQuery("SELECT ASI_NOM, ASI_ID FROM ASIGNATURA WHERE ASI_EST = '1'"))
+
+    for k in range(len(asignaturas)-1,-1,-1):
+        i = asignaturas[k]
+        lista.insert(0,'  '+ i[0])
+    
+    a = tk.Button(ventana, text="Calcular Nota", command = lambda: MostrarCalcularNota(ventana, lista.curselection(), asignaturas), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a.place(x=40,y=435)
+    buttons_ventana.append(a)
+
+    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=220,y=435)
+    
+    buttons_ventana.append(b)
+    buttons_ventana.append(lista)
+    buttons_ventana.append(a)
+    ventanas.append(ventana)
+
+    ventana.mainloop()
+
+def MostrarCalcularNota(ventana, seleccion, asignaturas):
+    global buttons_ventana, ventanas
+    EliminarBotones(buttons_ventana)
+
+    k = None if seleccion == () else seleccion[0]
+
+    b = tk.Label(ventana, text="Notas:" ,font=("", 17, 'bold'),justify="left")
+    b.place(x=40,y=40)
+   
+    container = tk.Frame(ventana)
+    canvas = tk.Canvas(container, width=700, height=395)
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, relief=GROOVE)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    notas_tipo, notas_final = CalcularNota(asignaturas[k][1]) if k != None else CalcularNota(None)
+    r = 0
+    if k == None:
+        for i in range(0,len(asignaturas)):
+            b = tk.Label(scrollable_frame, text=asignaturas[i][0],font=("", 16, 'bold'),justify="left")
+            b.grid(row=r,column=0,sticky="w")
+            buttons.append(b)
+
+            r = r + 1
+            tiene_notas = False
+
+            for j in range(0, len(notas_tipo)):
+                
+                if(asignaturas[i][1] == notas_tipo[j][0]):
+                    tiene_notas = True
+                    b = tk.Label(scrollable_frame, text="Nota promedio " + notas_tipo[j][1] + ": " + str(notas_tipo[j][2]),font=("", 12, ''),justify="left")
+                    b.grid(row=r,column=0,sticky="w")
+                    buttons.append(b)
+                    r = r + 1
+            
+            if tiene_notas == True:
+                for j in range(0, len(notas_final)):
+                    
+                    if(asignaturas[i][1] == notas_final[j][0]):
+                        b = tk.Label(scrollable_frame, text="Nota promedio final: " + str(notas_final[j][1]) + "\n",font=("", 12, 'bold'),justify="left")
+                        b.grid(row=r,column=0,sticky="w")
+                        buttons.append(b)
+                        r = r + 1
+                    
+            if tiene_notas == False:
+                b = tk.Label(scrollable_frame, text="- sin notas -\n",font=("", 12, ''),justify="left")
+                b.grid(row=r,column=0,sticky="w")
+                buttons.append(b)
+                r = r + 1
+    else:
+        
+        b = tk.Label(scrollable_frame, text=asignaturas[k][0],font=("", 16, 'bold'),justify="left")
+        b.grid(row=0,column=0,sticky="w")
+        buttons.append(b)
+        
+        if notas_tipo == []:
+            b = tk.Label(scrollable_frame, text="- sin notas -\n",font=("", 12, ''),justify="left")
+            b.grid(row=1,column=0,sticky="w")
+            buttons.append(b)
+        else:    
+            r = 1  
+            for j in range(0, len(notas_tipo)):
+                b = tk.Label(scrollable_frame, text="Nota promedio " + notas_tipo[j][1] + ": " + str(notas_tipo[j][2]),font=("", 12, ''),justify="left")
+                b.grid(row=r,column=0,sticky="w")
+                buttons.append(b)
+                r = r + 1
+
+            for j in range(0, len(notas_final)):
+
+                b = tk.Label(scrollable_frame, text="Nota promedio final: " + str(notas_final[j][1]) + "\n",font=("", 12, 'bold'),justify="left")
+                b.grid(row=r,column=0,sticky="w")
+                buttons.append(b)
+                r = r + 1
+    
+    container.place(x=40,y=80)
+    canvas.pack(side="left", fill="both")
+    scrollbar.pack(side="right", fill="y")
+
+    a = tk.Button(ventana, text="Cerrar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+    a.place(x=40,y=500)
+    
+    buttons_ventana.append(b)
+    
+
+# Fin modulos de interfaz grafica para la seccion Nota #
+
 # Modulos de interfaz grafica para la seccion Asignatura #
 
 def MostrarAsignatura():
@@ -744,21 +1507,6 @@ def MostrarAsignatura():
     b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
-    #Asignatura
-
-    asig_list = list(RunQuery("SELECT ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
-
-    asig = ['{}'.format(*opcion) for opcion in asig_list]
-
-    print(asig)
-
-    opcion_asig = tk.StringVar(contenido, value = asig[0]) # ¿Que pasa si el nombre de la asignatura es muy largo?
-    nueva_asig = tk.OptionMenu(contenido, opcion_asig, *asig) 
-    nueva_asig.config(font=("", 13, 'bold'))
-    nueva_asig["highlightthickness"]=0
-    nueva_asig.place(x=40,y=25)
-    buttons.append(nueva_asig)
-
     container = tk.Frame(contenido)
     canvas = tk.Canvas(container, width=490, height=300)
     scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
@@ -778,11 +1526,29 @@ def MostrarAsignatura():
     canvas.pack(side="left", fill="both")
     scrollbar.pack(side="right", fill="y")
 
-    b = tk.Button(contenido, text="Seleccionar", command = lambda: DatosAsignatura(scrollable_frame, opcion_asig.get()), relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=380,y=25)
-    b["bg"] = "#fbf8be"
-    b["activebackground"] = "#e3e0ac" 
-    buttons.append(b)
+    #Asignatura
+
+    asig_list = list(RunQuery("SELECT ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
+    if asig_list != []:
+        asig = ['{}'.format(*opcion) for opcion in asig_list] 
+
+        opcion_asig = tk.StringVar(contenido, value = asig[0]) # ¿Que pasa si el nombre de la asignatura es muy largo?
+        nueva_asig = tk.OptionMenu(contenido, opcion_asig, *asig) 
+        nueva_asig.config(font=("", 13, 'bold'))
+        nueva_asig["highlightthickness"]=0
+        nueva_asig.place(x=40,y=25)
+        buttons.append(nueva_asig)
+
+        b = tk.Button(contenido, text="Seleccionar", command = lambda: DatosAsignatura(scrollable_frame, opcion_asig.get()), relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+        b.place(x=380,y=25)
+        b["bg"] = "#fbf8be"
+        b["activebackground"] = "#e3e0ac" 
+        buttons.append(b)
+    else:
+        b = tk.Label(scrollable_frame, text="Actualmente no hay asignaturas activas.",font=("", 14, 'bold'),justify="left")
+        b.grid(row=0,column=0,sticky="w")
+
+        buttons.append(b)
 
     buttons.append(container)
     buttons.append(canvas)
@@ -792,7 +1558,7 @@ def MostrarAsignatura():
 def DatosAsignatura(frame, asig_nom):
     global buttons_ventana
     EliminarBotones(buttons_ventana)
-    rows = list(RunQuery("SELECT * FROM ASIGNATURA WHERE ASI_NOM = '" + asig_nom +"'")) # esto esta bien, pero  
+    rows = list(RunQuery("SELECT * FROM ASIGNATURA WHERE ASI_NOM = '" + asig_nom +"'"))  
     k = rows[0]
 
     # Asignatura
@@ -813,8 +1579,6 @@ def DatosAsignatura(frame, asig_nom):
     buttons_ventana.append(b)
 
 # Crear Asignatura
-
-#Crear Asignatura
 
 def IngresarCrearAsignatura(): # falta eliminar los objetos usados
     global buttons_ventana, ventanas
@@ -1162,165 +1926,6 @@ def EliminarAsignatura(ventana, rows, seleccion):
     MostrarAsignatura()
     messagebox.showinfo(message="Se ha eliminado la asignatura correctamente.", title="Mind your Study", parent=app)
 
-# Bloque horario
-
-def IngresarBloque():
-    global ventanas
-    EliminarVentanas(ventanas)
-
-    ventana = tk.Toplevel(app, bg="#D4E6F1")
-    ventana.title("Crear Bloque")
-    ventana.geometry("800x580")
-    ventana.resizable(False, False)
-    ventana.iconbitmap("favicon.ico")
-    ventana.focus()
-
-    frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=20, pady=20,sticky="we")
-    tk.Label(frame2, text = 'Ingrese los datos que corresponden al bloque: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
-
-    # Lista Asignaturas
-    tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
-
-    asig = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
-    #asig = ['{}'.format(*opcion) for opcion in asig_list]
-
-    opcion_asignatura = tk.StringVar(frame2, value = xstr(asig[0]))
-    nueva_asignatura = tk.OptionMenu(frame2, opcion_asignatura, *asig)
-    nueva_asignatura.grid(row=1, column=1, sticky="w")
-
-    # Lista Dia Semana
-    tk.Label(frame2, text =  'Dia de la semana: ', font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="e")
-
-    dia_list = list(RunQuery("SELECT DIA_NOMBRE FROM DIA WHERE DIA_ID >'0'"))
-    dia = ['{}'.format(*opcion) for opcion in dia_list]
-
-    opcion_dia = tk.StringVar(frame2, value = xstr(dia[0]))
-    nuevo_dia = tk.OptionMenu(frame2, opcion_dia, *dia)
-    nuevo_dia.grid(row=2, column=1, sticky="w")
-
-    # Lista hora
-    tk.Label(frame2, text =  'Hora: ', font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
-
-    hora = list(RunQuery("SELECT BL_ID, BL_INI, BL_FIN FROM TIPO_BLOQUE"))
-    #hora = ['{}'.format(*opcion) for opcion in hora_list]
-
-    opcion_hora = tk.StringVar(frame2, value = xstr(hora[0]))
-    nuevo_hora = tk.OptionMenu(frame2, opcion_hora, *hora)
-    nuevo_hora.grid(row=3, column=1, sticky="w")
-
-    a = tk.Button(ventana, text="Crear Bloque", command = lambda:  Crearbloque(ventana, (opcion_asignatura.get(), opcion_dia.get(), opcion_hora.get())), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=30, y=435)
-    buttons_ventana.append(a)
-
-    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=200,y=435)
-
-    ventanas.append(ventana)
-
-    ventana.mainloop()
-
-def Crearbloque(ventana, parameters):
-
-    asi_id = parameters[0][1]
-    dia_sem = parameters[1]
-    bl_id = parameters[2][1]
-
-    if(RegistroBloque((bl_id, asi_id, dia_sem), 'C') == -1):
-        m = "Ya existe un bloque en esa posicion."
-    else:
-        m = "Se ha creado el bloque correctamente."
-
-    MostrarHorario()
-
-    messagebox.showinfo(message= m, title="Mind your Study", parent=app)
-
-# Eliminar bloque
-def MostrarEliminarBloque():
-    global buttons_ventana, ventanas
-    EliminarBotones(buttons_ventana)
-    EliminarVentanas(ventanas)
-    ventana = tk.Toplevel(app, bg="#D4E6F1")
-    ventana.title("Eliminar Bloque")
-    ventana.geometry("800x580")
-    ventana.resizable(False, False)
-    ventana.iconbitmap("favicon.ico")
-    ventana.focus()
-
-    rows = list(RunQuery("SELECT * FROM BLOQUE"))
-    asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
-    bl_list = list(RunQuery("SELECT BL_ID, BL_INI FROM TIPO_BLOQUE"))
-
-    b = tk.Label(ventana, text="Selecciona el bloque a eliminar:",font=("", 20, 'bold'),justify="left")
-    b.place(x=40,y=40)
-    lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-    lista.place(x=40, y=95)
-    
-    for k in range(len(rows)-1,-1,-1):
-        i = rows[k]
-        for asig in asig_list:
-            if i[1] == asig[0]:
-                asignatura = asig[1]
-
-        for bl in bl_list:
-            if i[0] == bl[0]:
-                hora = bl[1]
-
-        lista.insert(0, i[2] + ' a las ' + hora + ': ' + asignatura)
-    
-    a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarBloque(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=40,y=435)
-
-    a = tk.Button(ventana, text="Borrar todo", command= lambda: EliminarTodoBloques(ventana, rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=205,y=435)
-
-    a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=365,y=435)
-    
-    buttons_ventana.append(b)
-    buttons_ventana.append(lista)
-    buttons_ventana.append(a)
-    ventanas.append(ventana)
-
-    ventana.mainloop()
-
-def EliminarBloque(ventana, rows, seleccion):
-    global app
-    
-    try:
-        rows[seleccion[0]]
-    except IndexError:
-        messagebox.showinfo(message="Debes seleccionar un bloque.", title="Mind your Study", parent=ventana)
-        return
-    
-    respuesta = messagebox.askyesno(message="¿Desea eliminar el bloque?", title="Eliminar Bloque", parent = ventana)
-
-    if not respuesta:
-        return
-    
-    k = rows[seleccion[0]]
-
-    print(k[0])
-    print(k[2])
-
-    RegistroBloque((k[0],k[2]),'E')
-    MostrarHorario()
-    messagebox.showinfo(message="Se ha eliminado el bloque correctamente.", title="Mind your Study", parent=app)
-
-def EliminarTodoBloques(ventana, rows):
-    global app
-
-    respuesta = messagebox.askyesno(message="¿Deseas eliminar todos los bloques?", title="Eliminar Bloque", parent = ventana)
-    
-    if not respuesta:
-        return
-            
-    for k in rows:
-        RegistroBloque((k[0],k[2]),'E')
-
-    MostrarHorario()
-    messagebox.showinfo(message="Se han eliminado todos los bloques.", title="Mind your Study", parent=app)
-
 # Fin modulos de interfaz grafica para la seccion Asignatura #
 
 ## FIN MODULOS QUE SON PARTE DE LA INTERFAZ GRAFICA ##
@@ -1358,7 +1963,14 @@ def RegistroAsignatura(a, case):
     RunQuery(query, a)
 
 def RegistroNota(n, case):
-    HolaMundo()
+    if case == 'C':
+        query = 'INSERT INTO NOTA VALUES(NULL,?,?,?)'
+    elif case == 'M':
+        query = 'UPDATE NOTA SET NOT_ID_ASI = ?, NOT_TIPO = ?, NOT_VAL = ? WHERE NOT_ID = ?'
+    elif case == 'E':
+        query = 'DELETE FROM NOTA WHERE NOT_ID = ?'
+
+    RunQuery(query, n)
 
 # Modulo RegistroActividad
 
@@ -1384,6 +1996,10 @@ def EmitirPlanificacion(opcionP):
     else:
         return NotificarActividad()
 
+def GenerarHorario():
+    query = "SELECT DIA_NOMBRE, ASI_NOM, BL_INI, BL_FIN FROM BLOQUE, DIA, ASIGNATURA WHERE BL_DIA_SEM = DIA_ID AND BL_ID_ASI = ASI_ID AND ASI_EST = '1'"
+    rows = RunQuery(query)
+
 def GenerarCalendario():
     query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACTIVIDAD.ACT_FECHA) as mes, strftime('%Y',ACTIVIDAD.ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_INI, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID ORDER BY ACT_FECHA"
     rows = RunQuery(query)
@@ -1396,79 +2012,6 @@ def GenerarConsejo():
 
 def NotificarActividad():
     HolaMundo()  
-
-def MostrarHorario():
-    global ventanas, buttons, contenido
-    EliminarBotones(buttons)
-    EliminarVentanas(ventanas)
-
-    container = tk.Frame(contenido)
-    canvas = tk.Canvas(container, width=500, height=450)
-    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
-    scrollable_frame = tk.Frame(canvas)
-
-    scrollable_frame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(
-            scrollregion=canvas.bbox("all")
-        )
-    )
-
-    bloques = list(RunQuery("SELECT * FROM BLOQUE"))
-    asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
-
-    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
-
-    for i in range(1,7):
-        bl_dia = []
-        for bloque in bloques: #filtra todos los bloques que corresponden al dia i
-            if(bloque[2] == DiaSemana(i)):
-                bl_dia.append(bloque)
-        bloques = [b for b in bloques if b not in bl_dia] #se borran los bloques que ya se guardaron en bl_dia
-        for j in range (1,11):
-            t = ""
-            w = 12
-            h = 3
-            color = '#E4F2F9'
-            if j == 1:
-                t = DiaSemana(i)
-                h = 1
-                color = '#CEE9F7'
-            elif bl_dia != []:
-                for bloque in bl_dia:
-                    if(bloque[0]+1 == j):
-                        color = '#fbf8be'
-                        for asig in asig_list:
-                            if(bloque[1] == asig[0]):
-                                t = asig[1]
-
-            b = tk.Button(scrollable_frame, text=t, font=("", 8), wraplength=80, width=w, height=h, command = HolaMundo, relief = tk.GROOVE)
-            b.grid(row=j,column=i)
-            b["bg"] = color
-            buttons.append(b)
-            
-
-    container.place(x=40,y=30)
-    canvas.pack(side="left", fill="both")
-    scrollbar.pack(side="right", fill="y")
-
-    b = tk.Button(contenido, text="Agregar Bloque", command = IngresarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=80,y=510)
-    b["bg"] = "#fbf8be"
-    b["activebackground"] = "#e3e0ac"
-    buttons.append(b)
-
-    b = tk.Button(contenido, text="Eliminar Bloque", command = MostrarEliminarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=350,y=510)
-    b["bg"] = "#fbf8be"
-    b["activebackground"] = "#e3e0ac"
-    buttons.append(b)
-
-    buttons.append(container)
-    buttons.append(canvas)
-    buttons.append(scrollbar)
-    buttons.append(scrollable_frame)
 
 # Modulo Resumir Actividades #
 
@@ -1620,7 +2163,33 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
 
     return rows_list
 
-## FIN MODULOS QUE SON PARTE DEL DES ##
+# Modulo Calcular Nota #
+
+def CalcularNota(id):
+    if id != None:
+        n_tipo = "SELECT ASI_ID AS ramo, NOT_TIPO AS tipo, ROUND(AVG(NOT_VAL),1) AS promedio FROM NOTA, ASIGNATURA WHERE NOT_ID_ASI = '" + str(id) + "' AND ASI_EST = '1' AND ASI_ID = '" + str(id) + "'  GROUP BY NOT_TIPO"
+
+    else:
+        n_tipo =  """SELECT
+                        ASI_ID AS ramo,
+                        NOT_TIPO AS tipo,
+                        ROUND(AVG(NOT_VAL),1) AS promedio
+                    FROM
+                        NOTA, ASIGNATURA
+                    WHERE
+                        NOT_ID_ASI = ASI_ID AND ASI_EST = '1'
+                     GROUP BY 
+                        NOT_ID_ASI, 
+                        NOT_TIPO  """
+
+    n_final = "WITH A as (" + n_tipo + ") SELECT A.ramo, round(AVG(A.promedio),1) AS nota_final FROM A GROUP BY A.ramo"
+
+    notas_tipo = list(RunQuery(n_tipo))
+    nota_final = list(RunQuery(n_final))
+    
+    return notas_tipo, nota_final
+    
+# # FIN MODULOS QUE SON PARTE DEL DES ##
 
 ###################################################################################
 
@@ -1636,7 +2205,7 @@ secciones.place(x=7,y=2)
 contenido = tk.Canvas(app, width = 580, height = 560, bg="#D4E6F1", relief = tk.RAISED, highlightthickness=3, highlightbackground="black")
 contenido.place(x=207,y=2)
 
-#Barra Menu
+# Barra Menu
 
 menubar = tk.Menu(app)
 app.config(menu = menubar)
@@ -1648,14 +2217,16 @@ menubar.add_cascade(label = "Ayuda",menu=helpmenu)
 
 # Seccion
 
-image = tk.PhotoImage(file="image.gif")
+imagen_logo = tk.PhotoImage(file="image.gif")
 
-label = tk.Label(secciones, image=image, width=171, height=171)
+label = tk.Button(secciones, image=imagen_logo, command=MostrarInicio ,width=171, height=171)
 label.place(x=15,y=15)
+
+MostrarInicio()
 
 BotonSeccion(secciones,"Horario",MostrarHorario, 10, 205,27)
 BotonSeccion(secciones,"Actividades", MostrarActividad, 10, 275)
-BotonSeccion(secciones,"Notas", HolaMundo, 10, 345,38.5)
+BotonSeccion(secciones,"Notas", MostrarNota, 10, 345,38.5)
 BotonSeccion(secciones,"Resumen", MostrarResumen, 10, 415,14)
 BotonSeccion(secciones,"Asignatura", MostrarAsignatura, 10, 485,5)
 

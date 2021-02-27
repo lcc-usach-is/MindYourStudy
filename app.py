@@ -3,11 +3,13 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.constants import ANCHOR, FLAT, GROOVE, SOLID
 from tkinter import messagebox
+from PIL import Image, ImageTk
 import tkinter.font as font
 import datetime
 import sqlite3
 import webbrowser
 import re #importa modulo para expresiones regulares
+import random
 
 app = tk.Tk()
 app.configure(background='#EAEDED')
@@ -190,9 +192,32 @@ def MostrarInicio():
     version = list(RunQuery("SELECT max(VERSION_NUM) FROM VERSION"))
     str_version = version[0][0]
 
+    # CONSEJO
+
+    lista_consejo = GenerarConsejo()
+    consejo = random.choice(lista_consejo)
+    consejo = '{}'.format(*consejo)
+
+    test = ImageTk.PhotoImage(Image.open("chinchilla.png"))
+
+    label1 = tk.Label(contenido, image=test, bg = '#D4E6F1')
+    label1.image = test
+    label1.place(x=49,y=403)
+    buttons.append(label1)
+
+    test = ImageTk.PhotoImage(Image.open("text_bubble.png"))
+
+    label1 = tk.Label(contenido, text=consejo, font=("", 10, 'bold'), image=test, bg = '#D4E6F1', compound = 'center', wraplength = 230)
+    label1.image = test
+    label1.place(x=155,y=310)
+    buttons.append(label1)
+
+
     b = tk.Label(contenido, text= "Version " + str_version,font=("", 17, ""),justify="center", bg = "#D4E6F1")
     b.place(x=240, y=223)
     buttons.append(b)
+
+
 
 # Fin modulos de interfaz grafica para la seccion Inicio # 
 
@@ -293,10 +318,6 @@ def MostrarEliminarBloque():
         ventana.resizable(False, False)
         ventana.iconbitmap("favicon.ico")
         ventana.focus()
-
-        rows = list(RunQuery("SELECT * FROM BLOQUE ORDER BY BL_DIA_SEM"))
-        asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
-        bl_list = list(RunQuery("SELECT BL_ID, BL_INI FROM TIPO_BLOQUE ORDER BY BL_INI"))
 
         b = tk.Label(ventana, text="Selecciona el bloque a eliminar:",font=("", 20, 'bold'),justify="left")
         b.place(x=40,y=40)
@@ -574,7 +595,7 @@ def IngresarCrearActividad(ventana, seleccion, rows): # falta eliminar los objet
     
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
         return
 
@@ -722,7 +743,7 @@ def IngresarModificarActividad(ventana, seleccion, rows): # Hay que eliminar los
 
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una actividad.", title="Mind your Study", parent=ventana)
         return
 
@@ -885,7 +906,7 @@ def EliminarActividad(ventana, rows, seleccion):
 
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una actividad.", title="Mind your Study", parent=ventana)
         return
     
@@ -1050,7 +1071,7 @@ def IngresarNota(ventana, parameters, asignatura):
     # Validacion de los datos
     try:
         asignatura[parameters[0][0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
         return
 
@@ -1058,7 +1079,7 @@ def IngresarNota(ventana, parameters, asignatura):
 
     try:
         float(parameters[1])
-    except ValueError as e:
+    except ValueError:
         messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
         return
 
@@ -1126,7 +1147,7 @@ def IngresarModificarNota(ventana, seleccion, rows):# Hay que eliminar los label
 
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una nota.", title="Mind your Study", parent=ventana)
         return
 
@@ -1200,7 +1221,7 @@ def ModificarNota(ventana, parameters, row):
     if parameters[2] != '':
         try:
             float(parameters[2])
-        except ValueError as e:
+        except ValueError:
             messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
             return
 
@@ -1267,7 +1288,7 @@ def EliminarNota(ventana, rows, seleccion):
 
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una Nota.", title="Mind your Study", parent=ventana)
         return
     
@@ -1778,7 +1799,7 @@ def IngresarModificarAsignatura(ventana, seleccion, rows): # Hay que eliminar lo
 
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una asignatura", title="Mind your Study", parent=ventana)
         return
 
@@ -1910,10 +1931,11 @@ def CambiarEstado(ventana, k, seleccion):
     global app
 
     rows = k[seleccion[0]]
+    bloques = []
 
     try:
         rows
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
         return
 
@@ -1925,13 +1947,18 @@ def CambiarEstado(ventana, k, seleccion):
 
     if(rows[5] == 1):
         nuevo_estado = 0
-        respuesta = messagebox.askyesno(message="La asignatura "+ asignatura + " cambiara a estado no activo ¿Continuar?", title="Cambiar Estado", parent = ventana)
+        bloques = list(RunQuery("SELECT BL_ID, BL_DIA_SEM FROM BLOQUE WHERE BL_ID_ASI = " + str(asi_id)))
+        respuesta = messagebox.askyesno(message="La asignatura "+ asignatura + " cambiara a estado no activo y se eliminaran sus bloques horarios ¿Continuar?", title="Cambiar Estado", parent = ventana)
     else:
         nuevo_estado = 1
         respuesta = messagebox.askyesno(message="La asignatura "+ asignatura + " cambiara a estado activo ¿Continuar?", title="Cambiar Estado", parent = ventana)
 
     if not respuesta:
         return
+
+    if bloques != []:
+        for k in bloques:
+            GestionAsignatura('E', (k[0], k[1]), None, None)
     
     GestionAsignatura('M', None, (asignatura, descripcion, nom_profesor, mail_profesor, nuevo_estado, asi_id), None)
     MostrarAsignatura()
@@ -1986,7 +2013,7 @@ def EliminarAsignatura(ventana, rows, seleccion):
 
     try:
         rows[seleccion[0]]
-    except IndexError as e:
+    except IndexError:
         messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
         return
     
@@ -2083,7 +2110,11 @@ def GenerarCalendario():
     return rows_list
 
 def GenerarConsejo():
-    HolaMundo()
+    query = "SELECT CON_DESC FROM CONSEJO WHERE CON_TIPO IN ('estudio', 'fisico')"
+    rows = RunQuery(query)
+    rows_list = list(rows)
+
+    return rows_list
 
 def NotificarActividad():
     HolaMundo()  

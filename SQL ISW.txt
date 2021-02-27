@@ -19,6 +19,23 @@ INSERT INTO ASIGNATURA VALUES(NULL, "Comunicacion de Computadoras", "Curso LCC d
 INSERT INTO ASIGNATURA VALUES(NULL, "MBDC", "Curso LCC del semestre 6", "Fredi Palominos", "fredi.palominos@usach.cl", 1);
 INSERT INTO ASIGNATURA VALUES(NULL, "Fundamentos II", "Curso LCC del semestre 6", "Rodrigo Abarzua", "rodrigo.abarzua@usach.cl", 1);
 
+CREATE TABLE "TIPO_BLOQUE" (
+	"BL_ID"		INTEGER NOT NULL,
+	"BL_INI"	TEXT NOT NULL,
+	"BL_FIN"	TEXT NOT NULL,
+	PRIMARY KEY("BL_ID")
+);
+
+INSERT INTO "TIPO_BLOQUE" VALUES ('1', '08:00', '09:30');
+INSERT INTO "TIPO_BLOQUE" VALUES ('2', '09:40', '11:10');
+INSERT INTO "TIPO_BLOQUE" VALUES ('3', '11:20', '12:50');
+INSERT INTO "TIPO_BLOQUE" VALUES ('4', '13:50', '15:20');
+INSERT INTO "TIPO_BLOQUE" VALUES ('5', '15:30', '17:00');
+INSERT INTO "TIPO_BLOQUE" VALUES ('6', '17:10', '18:40');
+INSERT INTO "TIPO_BLOQUE" VALUES ('7', '18:45', '20:10');
+INSERT INTO "TIPO_BLOQUE" VALUES ('8', '20:10', '21:35');
+INSERT INTO "TIPO_BLOQUE" VALUES ('9', '21:35', '23:00');
+
 CREATE TABLE BLOQUE (
 	"BL_NUM"    	INTEGER NOT NULL,
     	"BL_ID_ASI"	INTEGER NOT NULL, 
@@ -138,13 +155,12 @@ INSERT INTO TIPO_CONSEJO VALUES("recomendacionBuena", "consejos relacionados con
 INSERT INTO TIPO_CONSEJO VALUES("recomendacionMedia", "consejos relacionados con el normal rendimiento academico");
 INSERT INTO TIPO_CONSEJO VALUES("recomendacionMala", "consejos relacionados con el mal rendimiento academico")
 
-CREATE TABLE CONSEJO (
-	"CON_ID"    INTEGER NOT NULL,
-    "CON_TIPO"	TEXT NOT NULL, 
-	"CON_DESC "	TEXT NOT NULL,
+CREATE TABLE "CONSEJO" (
+	"CON_ID"	INTEGER NOT NULL,
+	"CON_TIPO"	TEXT NOT NULL,
+	"CON_DESC"	TEXT NOT NULL,
+	FOREIGN KEY("CON_TIPO") REFERENCES "TIPO_CONSEJO"("TCON_NOM"),
 	PRIMARY KEY("CON_ID" AUTOINCREMENT)
-    FOREIGN KEY ("CON_TIPO")
-       		REFERENCES TIPO_CONSEJO ("TCON_NOM")
 );
 
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Tus calificaciones son buenas, no te vendria mal un descanso.")

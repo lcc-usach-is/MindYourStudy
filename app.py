@@ -9,7 +9,6 @@ import datetime
 import sqlite3
 import webbrowser
 import re #importa modulo para expresiones regulares
-import random
 
 app = tk.Tk()
 app.configure(background='#EAEDED')
@@ -194,9 +193,7 @@ def MostrarInicio():
 
     # CONSEJO
 
-    lista_consejo = GenerarConsejo()
-    consejo = random.choice(lista_consejo)
-    consejo = '{}'.format(*consejo)
+    consejo = GenerarConsejo()
 
     test = ImageTk.PhotoImage(Image.open("chinchilla.png"))
 
@@ -217,17 +214,103 @@ def MostrarInicio():
     b.place(x=240, y=223)
     buttons.append(b)
 
-
-
 # Fin modulos de interfaz grafica para la seccion Inicio # 
 
 # Modulos de interfaz grafica para la seccion Horario #
 
+def MostrarHorario():
+    global ventanas, buttons, contenido
+    EliminarBotones(buttons)
+    EliminarVentanas(ventanas)
+
+    container = tk.Frame(contenido)
+    canvas = tk.Canvas(container, width=545, height=450)
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, bg='#E4F2F9')
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    tipo_bloque, bloques, asig_list = EmitirPlanificacion('horario')
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    b = tk.Button(scrollable_frame, text="", font=("", 8), wraplength=80, width=7, height=1, relief = tk.GROOVE, bg = '#CEE9F7')
+    b.grid(row=1,column=0)
+
+    for i in range(0,9):
+        text = tipo_bloque[i][0] + "\n-\n" + tipo_bloque[i][1]
+        a = tk.Button(scrollable_frame, text=text, font=("", 8), wraplength=80, width=7, height=3, relief = tk.GROOVE, bg='#CEE9F7')
+        a.grid(row=i+2,column=0)
+        buttons.append(a)
+
+    for i in range(1,7):
+        bl_dia = []
+        for bloque in bloques: #filtra todos los bloques que corresponden al dia i
+            if(bloque[2] == DiaSemana(i)):
+                bl_dia.append(bloque)
+        bloques = [b for b in bloques if b not in bl_dia] #se borran los bloques que ya se guardaron en bl_dia
+        for j in range (1,11):
+            t = ""
+            w = 12
+            h = 3
+            color = '#E4F2F9'
+            if j == 1:
+                t = DiaSemana(i)
+                h = 1
+                color = '#CEE9F7'
+            elif bl_dia != []:
+                for bloque in bl_dia:
+                    if(bloque[0]+1 == j):
+                        color = '#fbf8be'
+                        for asig in asig_list:
+                            if(bloque[1] == asig[0]):
+                                t = asig[1]
+
+            b = tk.Button(scrollable_frame, text=t, font=("", 8), wraplength=80, width=w, height=h, relief = tk.GROOVE, bg=color)
+            b.grid(row=j,column=i)
+
+            #a = tk.Button(scrollable_frame, text=bloques[j][1], font=("", 8), wraplength=80, width=7, height=3, relief = tk.GROOVE)
+            #a.grid(row=5,column=0)
+
+            buttons.append(b)
+            #buttons.append(a)
+            
+
+    container.place(x=10,y=30)
+    canvas.pack(side="left", fill="both")
+    scrollbar.pack(side="right", fill="y")
+
+    b = tk.Button(contenido, text="Agregar Bloque", command = IngresarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=80,y=510)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    b = tk.Button(contenido, text="Eliminar Bloque", command = MostrarEliminarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
+    b.place(x=350,y=510)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
+    buttons.append(b)
+
+    buttons.append(container)
+    buttons.append(canvas)
+    buttons.append(scrollbar)
+    buttons.append(scrollable_frame)
+
+# Ingresar Horario
+
 def IngresarBloque():
     global app
-    asig = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
 
-    if asig != []:
+    asignaturas = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
+
+    if asignaturas != []:
         global ventanas
         EliminarVentanas(ventanas)
 
@@ -238,42 +321,50 @@ def IngresarBloque():
         ventana.iconbitmap("favicon.ico")
         ventana.focus()
 
-        frame2  = tk.Frame(ventana)
-        frame2.grid(row=3, column = 0, padx=20, pady=20,sticky="we")
-        tk.Label(frame2, text = 'Ingrese los datos que corresponden al bloque: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
-
         # Lista Asignaturas
-        tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
+        
+        b = tk.Label(ventana, text = ' Seleccione la asignatura del bloque a crear:', font=("", 15, 'bold'),justify="left")
+        b.place(x=40,y=40)
 
-        opcion_asignatura = tk.StringVar(frame2, value = xstr(asig[0]))
-        nueva_asignatura = tk.OptionMenu(frame2, opcion_asignatura, *asig)
-        nueva_asignatura.grid(row=1, column=1, sticky="w")
+        lista = tk.Listbox(ventana, height=11, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
+        lista.place(x=40, y=85)
 
+        for k in range(len(asignaturas)-1,-1,-1):
+            i = asignaturas[k]
+            lista.insert(0,'  '+ i[1])
+        
         # Lista Dia Semana
-        tk.Label(frame2, text =  'Dia de la semana: ', font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0,sticky="e")
+        b = tk.Label(ventana, text =  'Dia de la semana: ', font=("", 13, 'bold'),justify="left")
+        b.place(x=40,y=320)
 
         dia_list = list(RunQuery("SELECT DIA_NOMBRE FROM DIA WHERE DIA_ID >'0'"))
         dia = ['{}'.format(*opcion) for opcion in dia_list]
 
-        opcion_dia = tk.StringVar(frame2, value = xstr(dia[0]))
-        nuevo_dia = tk.OptionMenu(frame2, opcion_dia, *dia)
-        nuevo_dia.grid(row=2, column=1, sticky="w")
-
+        opcion_dia = tk.StringVar(ventana, value = '')
+        nuevo_dia = tk.OptionMenu(ventana, opcion_dia, *dia)
+        nuevo_dia.place(x=200,y=318)
+        
         # Lista hora
-        tk.Label(frame2, text =  'Hora: ', font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
+        b = tk.Label(ventana, text =  'Hora: ', font=("", 13, 'bold'),justify="left")
+        b.place(x=40, y=370)
 
         hora = list(RunQuery("SELECT BL_ID, BL_INI, BL_FIN FROM TIPO_BLOQUE"))
 
-        opcion_hora = tk.StringVar(frame2, value = xstr(hora[0]))
-        nuevo_hora = tk.OptionMenu(frame2, opcion_hora, *hora)
-        nuevo_hora.grid(row=3, column=1, sticky="w")
+        hora_list = []
 
-        a = tk.Button(ventana, text="Crear Bloque", command = lambda:  Crearbloque(ventana, (opcion_asignatura.get(), opcion_dia.get(), opcion_hora.get())), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=30, y=435)
+        for k in hora:
+            hora_list.append([k[1], k[2]])
+
+        opcion_hora = tk.StringVar(ventana, value = '')
+        nuevo_hora = tk.OptionMenu(ventana, opcion_hora, *hora_list)
+        nuevo_hora.place(x=100, y=370)
+
+        a = tk.Button(ventana, text="Crear Bloque", command = lambda:  Crearbloque(ventana, (lista.curselection(), opcion_dia.get(), opcion_hora.get()), asignaturas, hora), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+        a.place(x=40, y=435)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=210,y=435)
 
         ventanas.append(ventana)
 
@@ -282,13 +373,38 @@ def IngresarBloque():
         messagebox.showinfo(message="No existen asignaturas activas / creadas.", title="Mind your Study", parent=app)
         return  
 
-def Crearbloque(ventana, parameters):
+def Crearbloque(ventana, parameters, asignaturas, horas):
+    
+    # Validacion de asignatura
+    try:
+        asignaturas[parameters[0][0]]
+    except IndexError:
+        messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
+        return
 
-    asi_id = parameters[0][1]
-    dia_sem = parameters[1]
-    bl_id = parameters[2][1]
+    asignatura_id = asignaturas[parameters[0][0]][0]
+    
+    # Validacion de dia semana
+    if parameters[1] != '':
+        dia_sem = parameters[1].translate({ord(i):None for i in "()',"})
+    else:
+        messagebox.showinfo(message="Debes ingresar un dia de semana.", title="Mind your Study", parent=ventana)
+        return
 
-    if(GestionAsignatura('C', (bl_id, asi_id, dia_sem), None, None) == -1):
+    # Validacion de hora
+    if parameters[2] != '':
+        hora_str = parameters[2].translate({ord(i):None for i in "()',"})
+    else:
+        messagebox.showinfo(message="Debes ingresar una hora.", title="Mind your Study", parent=ventana)
+        return
+    
+    for k in horas:
+        if k[1] == hora_str[0:5] and k[2] == hora_str[6:11]:
+            bl_id = k[0]
+    
+    crear_bool = GestionAsignatura('C', (bl_id, asignatura_id, dia_sem), None, None)
+
+    if( crear_bool == -1):
         m = "Ya existe un bloque en esa posicion."
         messagebox.showinfo(message= m, title="Mind your Study", parent=ventana)
         return
@@ -297,8 +413,9 @@ def Crearbloque(ventana, parameters):
 
     m = "Se ha creado el bloque correctamente."
     messagebox.showinfo(message= m, title="Mind your Study", parent=app)
-
+    
 # Eliminar bloque
+
 def MostrarEliminarBloque():
     global app
 
@@ -389,79 +506,6 @@ def EliminarTodoBloques(ventana, rows):
 
     MostrarHorario()
     messagebox.showinfo(message="Se han eliminado todos los bloques.", title="Mind your Study", parent=app)
-
-def MostrarHorario():
-    global ventanas, buttons, contenido
-    EliminarBotones(buttons)
-    EliminarVentanas(ventanas)
-
-    container = tk.Frame(contenido)
-    canvas = tk.Canvas(container, width=500, height=450)
-    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
-    scrollable_frame = tk.Frame(canvas)
-
-    scrollable_frame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(
-            scrollregion=canvas.bbox("all")
-        )
-    )
-
-    bloques = list(RunQuery("SELECT * FROM BLOQUE")) 
-    asig_list = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"))
-
-    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
-
-    for i in range(1,7):
-        bl_dia = []
-        for bloque in bloques: #filtra todos los bloques que corresponden al dia i
-            if(bloque[2] == DiaSemana(i)):
-                bl_dia.append(bloque)
-        bloques = [b for b in bloques if b not in bl_dia] #se borran los bloques que ya se guardaron en bl_dia
-        for j in range (1,11):
-            t = ""
-            w = 12
-            h = 3
-            color = '#E4F2F9'
-            if j == 1:
-                t = DiaSemana(i)
-                h = 1
-                color = '#CEE9F7'
-            elif bl_dia != []:
-                for bloque in bl_dia:
-                    if(bloque[0]+1 == j):
-                        color = '#fbf8be'
-                        for asig in asig_list:
-                            if(bloque[1] == asig[0]):
-                                t = asig[1]
-
-            b = tk.Button(scrollable_frame, text=t, font=("", 8), wraplength=80, width=w, height=h, command = HolaMundo, relief = tk.GROOVE)
-            b.grid(row=j,column=i)
-            b["bg"] = color
-            buttons.append(b)
-            
-
-    container.place(x=40,y=30)
-    canvas.pack(side="left", fill="both")
-    scrollbar.pack(side="right", fill="y")
-
-    b = tk.Button(contenido, text="Agregar Bloque", command = IngresarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=80,y=510)
-    b["bg"] = "#fbf8be"
-    b["activebackground"] = "#e3e0ac"
-    buttons.append(b)
-
-    b = tk.Button(contenido, text="Eliminar Bloque", command = MostrarEliminarBloque, relief = SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=350,y=510)
-    b["bg"] = "#fbf8be"
-    b["activebackground"] = "#e3e0ac"
-    buttons.append(b)
-
-    buttons.append(container)
-    buttons.append(canvas)
-    buttons.append(scrollbar)
-    buttons.append(scrollable_frame)
 
 # Fin modulos de interfaz grafica para la seccion Horario #
 
@@ -589,7 +633,6 @@ def MostrarCrearActividad():
         messagebox.showinfo(message="No existen asignaturas activas / creadas.", title="Mind your Study", parent=app)
         return  
         
-
 def IngresarCrearActividad(ventana, seleccion, rows): # falta eliminar los objetos usados
     global buttons_ventana
     
@@ -860,10 +903,10 @@ def ModificarActividad(ventana, parameters, row): # Falta verificar que la fecha
 
 # Eliminar actividad
 
-def MostrarEliminarActividad():
+def MostrarEliminarActividad(): 
     global app
 
-    rows = list(RunQuery("SELECT ACT_ID, ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID ORDER BY ACT_FECHA"))
+    rows = list(RunQuery("SELECT ACT_ID, ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now') AND ACT_ID_ASI = ASI_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"))
 
     if rows != []:
 
@@ -2099,22 +2142,33 @@ def EmitirPlanificacion(opcionP):
         return NotificarActividad()
 
 def GenerarHorario():
-    query = "SELECT DIA_NOMBRE, ASI_NOM, BL_INI, BL_FIN FROM BLOQUE, DIA, ASIGNATURA WHERE BL_DIA_SEM = DIA_ID AND BL_ID_ASI = ASI_ID AND ASI_EST = '1'"
-    rows = RunQuery(query)
+    query_tipo_bloque = "SELECT BL_INI, BL_FIN FROM TIPO_BLOQUE"
+    query_bloques = "SELECT * FROM BLOQUE"
+    query_asignaturas = "SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST = '1'"
+
+    tipo_bloque = list(RunQuery(query_tipo_bloque))
+    bloques = list(RunQuery(query_bloques))
+    asignaturas = list(RunQuery(query_asignaturas))
+
+    return tipo_bloque, bloques, asignaturas
 
 def GenerarCalendario():
-    query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACTIVIDAD.ACT_FECHA) as mes, strftime('%Y',ACTIVIDAD.ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_INI, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID ORDER BY ACT_FECHA"
+    query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACTIVIDAD.ACT_FECHA) as mes, strftime('%Y',ACTIVIDAD.ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_INI, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"
     rows = RunQuery(query)
     rows_list = list(rows)
 
     return rows_list
 
 def GenerarConsejo():
-    query = "SELECT CON_DESC FROM CONSEJO WHERE CON_TIPO IN ('estudio', 'fisico')"
-    rows = RunQuery(query)
-    rows_list = list(rows)
+    query = ''' SELECT CON_DESC 
+                FROM CONSEJO 
+                WHERE CON_TIPO NOT IN("recomendacionBuena", "recomendacionMedia", "recomendacionMala")
+                ORDER BY RANDOM() 
+                LIMIT 1; '''
 
-    return rows_list
+    consejo = list(RunQuery(query))
+
+    return consejo[0][0]
 
 def NotificarActividad():
     HolaMundo()  

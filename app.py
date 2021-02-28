@@ -1782,7 +1782,7 @@ def CrearAsignatura(ventana, parameters): # Falta verificar que la fecha sea pro
         return
     
     #Mail profesor
-    if not(re.search(regex,parameters[3])):  
+    if not(re.search(regex,parameters[3])) and parameters[3] != '':   
         messagebox.showinfo(message="Debes ingresar un correo valido.", title="Mind your Study", parent=ventana)
         return
     mail_profesor = parameters[3]

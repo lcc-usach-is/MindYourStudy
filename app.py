@@ -2,13 +2,16 @@ from sqlite3.dbapi2 import threadsafety, version
 import tkinter as tk
 from tkinter import ttk
 from tkinter.constants import ANCHOR, FLAT, GROOVE, SOLID
-from tkinter import messagebox
+from tkinter import messagebox, Scrollbar
 from PIL import Image, ImageTk
 import tkinter.font as font
 import datetime
+from datetime import date
 import sqlite3
 import webbrowser
 import re #importa modulo para expresiones regulares
+from win10toast import ToastNotifier
+from time import sleep
 
 app = tk.Tk()
 app.configure(background='#EAEDED')
@@ -26,12 +29,7 @@ buttons = [] # Lista que guarda elementos creados para despues ser borrados al c
 ventanas = [] # Lista de ventanas
 buttons_ventana = [] # Lista de los botones creados para las ventanas o frames 
 
-def HolaMundo():
-    global buttons
-    EliminarBotones(buttons)
-    print("Hola Mundo")
-
-def BotonSeccion(canvas, texto,funcion, xpos, ypos, paddingx = 0):
+def BotonSeccion(canvas, texto, funcion, xpos, ypos, paddingx = 0):
     b = tk.Button(canvas, text=texto, command = funcion, relief = SOLID, font=("", 20, 'bold'), bd=3, padx=paddingx)
     b.place(x=xpos,y=ypos)
     b["bg"] = "#fbf8be"
@@ -209,10 +207,99 @@ def MostrarInicio():
     label1.place(x=155,y=310)
     buttons.append(label1)
 
+    notificaciones, cantidad_notificaciones = CalcularNotificaciones()
+
+    button = tk.Button(contenido, text="Notificaciones", command= lambda: MostrarNotificaciones(notificaciones),font=("", 13, 'bold'), bg = '#E2E8ED', compound = 'center', relief=GROOVE)
+    button.place(x=20,y=20)
+    buttons.append(button)
+
+    label_cantidad_notificaciones = tk.Label(contenido, text= str(cantidad_notificaciones),font=("", 15, 'bold'), bg = '#E2E8ED', compound = 'center', relief=GROOVE, pady=2, padx=4)
+    label_cantidad_notificaciones.place(x=150,y=20)
+    buttons.append(label_cantidad_notificaciones)
 
     b = tk.Label(contenido, text= "Version " + str_version,font=("", 17, ""),justify="center", bg = "#D4E6F1")
     b.place(x=240, y=223)
     buttons.append(b)
+
+def MostrarNotificaciones(notificaciones):
+    global ventanas, buttons_ventana
+    EliminarVentanas(ventanas)
+    EliminarBotones(buttons_ventana)
+
+    ventana = tk.Toplevel(app, bg="#D4E6F1")
+    ventana.title("Notificaciones")
+    ventana.geometry("800x580")
+    ventana.resizable(False, False)
+    ventana.iconbitmap("favicon.ico")
+    ventana.focus()
+
+    ventanas.append(ventana)
+
+    container = tk.Frame(ventana)
+    canvas = tk.Canvas(container, width=700, height=420)
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollable_frame = tk.Frame(canvas, relief=GROOVE)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(
+            scrollregion=canvas.bbox("all")
+        )
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    b = tk.Label(ventana, text= "Notificaciones:",font=("", 16, 'bold') ,justify="left")
+    b.place(x=40,y=20)
+    buttons_ventana.append(b)
+
+    r = 1
+    for i in notificaciones:
+        if notificaciones[i] != []:
+            b = tk.Label(scrollable_frame, text= i, font=("", 15, 'bold') ,justify="left")
+            b.grid(row=r,column=0, sticky='w')
+            buttons.append(b)
+            r = r + 1       
+        
+        for j in notificaciones[i]:
+            b = tk.Label(scrollable_frame, text= j, font=("", 12, '') ,justify="left")
+            b.grid(row=r,column=0, sticky='w')
+            buttons.append(b)
+            r = r + 1    
+    
+    container.place(x=40,y=60)
+    canvas.pack(side="left", fill="both")
+    scrollbar.pack(side="right", fill="y")
+
+    b = tk.Button(ventana, text="Cerrar", command = ventana.destroy, relief = SOLID, font=("", 16, 'bold'), bd=1, padx=60)
+    b.place(x=40,y=500)
+    buttons.append(b)
+
+    ventana.mainloop()
+
+    #toaster = ToastNotifier()
+    #toaster.show_toast("Mind your Study", text, duration = 5, icon_path ="favicon.ico", threaded=True)
+
+def CalcularNotificaciones():
+    recomendacion_cantidad_evaluaciones = Recomendar("cantidad evaluaciones")
+    notificar_actividades = EmitirPlanificacion("notificar actividades")
+    
+    r_calificaciones = Recomendar("estudios")
+
+    recomendacion_calificaciones = [r_calificaciones] if r_calificaciones != "" else []
+
+    notificaciones =   {'Recomendacion estudio/descanso por cantidad de evaluaciones.': [recomendacion_cantidad_evaluaciones],
+                        'Notificacion de actividades.': notificar_actividades,
+                        'Recomendacion por calificaciones': recomendacion_calificaciones
+                        }
+
+    cantidad = 0
+
+    for k in notificaciones:
+        cantidad = cantidad + len(notificaciones[k])
+
+    return notificaciones, cantidad
 
 # Fin modulos de interfaz grafica para la seccion Inicio # 
 
@@ -240,7 +327,7 @@ def MostrarHorario():
     canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
     canvas.configure(yscrollcommand=scrollbar.set)
 
-    b = tk.Button(scrollable_frame, text="", font=("", 8), wraplength=80, width=7, height=1, relief = tk.GROOVE, bg = '#CEE9F7')
+    b = tk.Button(scrollable_frame, text="Hrs", font=("", 8), wraplength=80, width=7, height=1, relief = tk.GROOVE, bg = '#CEE9F7')
     b.grid(row=1,column=0)
 
     for i in range(0,9):
@@ -302,7 +389,6 @@ def MostrarHorario():
     buttons.append(canvas)
     buttons.append(scrollbar)
     buttons.append(scrollable_frame)
-
 # Ingresar Horario
 
 def IngresarBloque():
@@ -311,8 +397,9 @@ def IngresarBloque():
     asignaturas = list(RunQuery("SELECT ASI_ID, ASI_NOM FROM ASIGNATURA WHERE ASI_EST ='1'"))
 
     if asignaturas != []:
-        global ventanas
+        global ventanas, buttons_ventana
         EliminarVentanas(ventanas)
+        EliminarBotones(buttons_ventana)
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
         ventana.title("Crear Bloque")
@@ -328,11 +415,11 @@ def IngresarBloque():
 
         lista = tk.Listbox(ventana, height=11, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
         lista.place(x=40, y=85)
-
+        
         for k in range(len(asignaturas)-1,-1,-1):
             i = asignaturas[k]
             lista.insert(0,'  '+ i[1])
-        
+
         # Lista Dia Semana
         b = tk.Label(ventana, text =  'Dia de la semana: ', font=("", 13, 'bold'),justify="left")
         b.place(x=40,y=320)
@@ -571,7 +658,7 @@ def MostrarActividad():
                 buttons.append(b)
                 r = r + 1
 
-            a = tk.Label(scrollable_frame, text=rows[k][0] + ' ' + rows[k][1] + ': ' + rows[k][4] + ', ' + rows[k][5], wraplengt=475,justify="left")
+            a = tk.Label(scrollable_frame, text=rows[k][0] + ' ' + rows[k][1] + ': ' + rows[k][4] + ', ' + rows[k][7]+ ', ' +rows[k][5], wraplengt=475,justify="left")
             a.grid(row=r,column=0, sticky='w')
             buttons.append(a)
             r = r + 1
@@ -964,6 +1051,19 @@ def EliminarActividad(ventana, rows, seleccion):
     MostrarActividad()
     messagebox.showinfo(message="Se ha eliminado la actividad correctamente.", title="Mind your Study", parent=app)
     
+def EliminarTodoActividad(ventana, rows):
+    global app
+
+    respuesta = messagebox.askyesno(message="¿Deseas eliminar todas las notas?", title="Eliminar Notas", parent = ventana)
+    
+    if not respuesta:
+        return
+            
+    for k in rows:
+        RegistroActividad((k[0], k[1]),'E')
+
+    MostrarActividad()
+    messagebox.showinfo(message="Se han eliminado todas las actividades.", title="Mind your Study", parent=app)
 # Fin modulos de interfaz grafica para la seccion Actividad #
 
 # Modulos de interfaz grafica para la seccion Nota #
@@ -1111,7 +1211,7 @@ def MostrarIngresarNota():
 def IngresarNota(ventana, parameters, asignatura):  
     global app
 
-    # Validacion de los datos
+    # validacion asignatura
     try:
         asignatura[parameters[0][0]]
     except IndexError:
@@ -1120,6 +1220,7 @@ def IngresarNota(ventana, parameters, asignatura):
 
     id_asignatura = asignatura[parameters[0][0]][1]
 
+    # Validacion nota valida
     try:
         float(parameters[1])
     except ValueError:
@@ -1133,6 +1234,8 @@ def IngresarNota(ventana, parameters, asignatura):
         messagebox.showinfo(message="Debes ingresar una nota valida.", title="Mind your Study", parent=ventana)
         return
 
+    # Validacion de ingreso de tipo de nota
+
     if parameters[2] != '':
         tipo_nota = parameters[2].translate({ord(i):None for i in "()',"})
     else:
@@ -1144,6 +1247,12 @@ def IngresarNota(ventana, parameters, asignatura):
     GestionAsignatura('C', None, None, (id_asignatura, tipo_nota, nota))
     MostrarNota()
     messagebox.showinfo(message="Se ha ingresado la nota correctamente.", title="Mind your Study", parent=app)
+    
+    #Recomendacion en base a las calificaciones
+
+    recomendacion = Recomendar("estudios")
+    toaster = ToastNotifier()
+    toaster.show_toast("Mind your Study", recomendacion, duration = 5, icon_path ="favicon.ico", threaded=True)
     
 def MostrarModificarNota():
     global buttons_ventana, ventanas, app
@@ -1312,10 +1421,13 @@ def MostrarEliminarNota():
         
         a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarNota(ventana, rows, lista.curselection()), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=0)
         a.place(x=40,y=435)
+        
+        a = tk.Button(ventana, text="Borrar todo", command = lambda: EliminarTodoNotas(ventana, rows), relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
+        a.place(x=200,y=435)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
-        
+        a.place(x=375,y=435)
+
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
         buttons_ventana.append(a)
@@ -1342,11 +1454,24 @@ def EliminarNota(ventana, rows, seleccion):
     
     k = rows[seleccion[0]]
 
-    print(k[0])
     GestionAsignatura('E', None, None, (str(k[0]),))
     MostrarNota()
     messagebox.showinfo(message="Se ha eliminado la actividad correctamente.", title="Mind your Study", parent=app)
+
+def EliminarTodoNotas(ventana, rows):
+    global app
+
+    respuesta = messagebox.askyesno(message="¿Deseas eliminar todas las notas?", title="Eliminar Notas", parent = ventana)
     
+    if not respuesta:
+        return
+            
+    for k in rows:
+        GestionAsignatura('E', None, None, (str(k[0]),))
+
+    MostrarNota()
+    messagebox.showinfo(message="Se han eliminado todas las notas.", title="Mind your Study", parent=app)
+
 def ElegirCalcularNota():
     global app
     asignaturas = list(RunQuery("SELECT ASI_NOM, ASI_ID FROM ASIGNATURA WHERE ASI_EST = '1'"))
@@ -1782,7 +1907,7 @@ def CrearAsignatura(ventana, parameters): # Falta verificar que la fecha sea pro
         return
     
     #Mail profesor
-    if not(re.search(regex,parameters[3])) and parameters[3] != '':   
+    if not(re.search(regex,parameters[3])) and parameters[3] != '':  
         messagebox.showinfo(message="Debes ingresar un correo valido.", title="Mind your Study", parent=ventana)
         return
     mail_profesor = parameters[3]
@@ -2073,6 +2198,32 @@ def EliminarAsignatura(ventana, rows, seleccion):
 
 # Fin modulos de interfaz grafica para la seccion Asignatura #
 
+def EnviarNotificacionesSemana():
+    dia_semana = int(datetime.datetime.today().strftime('%w'))
+    toaster = ToastNotifier()
+
+    notificaciones = NotificarActividad()
+    longitud  = len(notificaciones)
+
+    if dia_semana == 1:
+        if notificaciones != []:
+            if longitud == 1:
+                s = " Ademas, tienes 1 actividad proxima."
+            else:
+                s = " Ademas, tienes " + str(longitud) + " actividades proximas."
+        else:
+            s = ""
+
+        recomendacion = Recomendar("cantidad evaluaciones")
+        toaster.show_toast("Mind your Study", recomendacion + s, duration = 5, icon_path ="favicon.ico", threaded=True)
+    else:
+        if notificaciones != []:
+            
+            if longitud == 1:
+                toaster.show_toast("Mind your Study", notificaciones[0], duration = 5, icon_path ="favicon.ico", threaded=True)
+            else:
+                toaster.show_toast("Mind your Study", "Tienes " + str(longitud) + " actividades proximas. Revisa tus notificaciones en el inicio de Mind your Study.", duration = 5, icon_path ="favicon.ico", threaded=True)
+
 ## FIN MODULOS QUE SON PARTE DE LA INTERFAZ GRAFICA ##
 
 ###################################################################################
@@ -2162,16 +2313,51 @@ def GenerarCalendario():
 def GenerarConsejo():
     query = ''' SELECT CON_DESC 
                 FROM CONSEJO 
-                WHERE CON_TIPO NOT IN("recomendacionBuena", "recomendacionMedia", "recomendacionMala")
+                WHERE CON_TIPO NOT IN("recomendacionBuena", "recomendacionMedia", "recomendacionAlerta")
                 ORDER BY RANDOM() 
-                LIMIT 1; '''
+                LIMIT 1; 
+            '''
 
     consejo = list(RunQuery(query))
 
     return consejo[0][0]
 
 def NotificarActividad():
-    HolaMundo()  
+    query = ''' 
+                    WITH A AS (
+                        SELECT
+                            ASI_NOM AS asig,
+                            (strftime('%d', ACTIVIDAD.ACT_FECHA) - strftime('%d', DATE('now'))) as diasFaltantes,
+							ACT_TIPO as tipo,
+							ACT_FECHA as fecha
+                        FROM
+                            ACTIVIDAD,
+                            ASIGNATURA,
+                            PRIORIDAD
+                        WHERE
+                            PRI_NIVEL = ACT_PRI
+                            AND ASI_ID = ACT_ID_ASI
+                            AND diasFaltantes BETWEEN 0 AND PRI_CANT
+                        )
+                    SELECT
+                        "Tienes una actividad " || A.tipo || " de " || A.asig ||(CASE
+																					WHEN diasFaltantes = 0
+																						THEN " hoy " || A.fecha || "."
+																					WHEN diasFaltantes = 1
+																						THEN " en 1 dia (" || A.fecha ||")."
+																					ELSE " en " || A.diasFaltantes || " dias (" || A.fecha ||")."
+																				END) as Notificacion
+                    FROM A
+            '''
+
+    notificaciones_list  = list(RunQuery(query))
+
+    notificaciones = []
+
+    for k in notificaciones_list:
+        notificaciones.append(k[0])
+
+    return notificaciones
 
 # Modulo Resumir Actividades #
 
@@ -2348,7 +2534,68 @@ def CalcularNota(id):
     nota_final = list(RunQuery(n_final))
     
     return notas_tipo, nota_final
-    
+
+# Modulo Recomendar #
+
+def Recomendar(tipo):
+    if tipo == "estudios":
+        query_promedio_notas = ''' SELECT ROUND(AVG(NOT_VAL),1)
+                            FROM 
+                                NOTA, ASIGNATURA
+                            WHERE
+                                ASI_ID = NOT_ID_ASI
+                                AND ASI_EST = 1 
+                        '''
+        list_prom = list(RunQuery(query_promedio_notas))
+        
+        promedio_notas = list_prom[0][0]
+        if promedio_notas != None:
+            if promedio_notas < 4.0:
+                tipoconsejo = "recomendacionAlerta"
+            elif promedio_notas >= 5.0:
+                tipoconsejo = "recomendacionBuena"
+            else:
+                tipoconsejo = "recomendacionMedia"
+            
+            query_recomendacion = '''   SELECT CON_DESC
+                                        FROM 
+                                            CONSEJO
+                                        WHERE
+                                            CON_TIPO = "''' + tipoconsejo + '''"
+                                        ORDER BY RANDOM()
+                                        LIMIT 1; 
+                                '''
+            
+            list_recomendacion = list(RunQuery(query_recomendacion))
+            recomendacion = list_recomendacion[0][0]
+        else:
+            recomendacion = ""
+    else:
+        query_cantidad_evaluaciones = '''   SELECT 
+                                                COUNT(ACT_ID)
+                                            FROM 
+                                                ACTIVIDAD, 
+                                                ASIGNATURA
+                                            WHERE 
+                                                strftime('%W', ACT_FECHA) = strftime('%W',DATE('now')) AND 
+                                                strftime('%Y', ACT_FECHA) = strftime('%Y',DATE('now')) AND 
+                                                ACT_ID_ASI = ASI_ID AND 
+                                                ASI_EST = '1' AND
+                                                ACT_TIPO = 'evaluativa'
+                                        '''
+
+        list_cantidad_evaluaciones = list(RunQuery(query_cantidad_evaluaciones))
+        cantidad_evaluaciones = list_cantidad_evaluaciones[0][0]
+
+        if cantidad_evaluaciones == 0:
+            recomendacion = "Esta semana no tienes evaluaciones, no te vendria mal un descanso."
+        elif cantidad_evaluaciones < 3:
+            recomendacion = "Esta semana tienes algunas evaluaciones, seria bueno estar preparado."
+        else:
+            recomendacion = "Esta semana tienes muchas evaluaciones, preparate y estudia."
+
+    return recomendacion
+
 # # FIN MODULOS QUE SON PARTE DEL DES ##
 
 ###################################################################################
@@ -2390,8 +2637,7 @@ BotonSeccion(secciones,"Notas", MostrarNota, 10, 345,38.5)
 BotonSeccion(secciones,"Resumen", MostrarResumen, 10, 415,14)
 BotonSeccion(secciones,"Asignatura", MostrarAsignatura, 10, 485,5)
 
-# Contenido actividad
+EnviarNotificacionesSemana()
 
 # MainLoop
-
 app.mainloop()

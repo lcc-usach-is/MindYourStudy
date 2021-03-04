@@ -54,13 +54,13 @@ def RegistroActividad(a, case):
 
 # Modulo Emitir una planificacion
 
-def EmitirPlanificacion(opcionP):
+def EmitirPlanificacion(opcionP, tipo = None):
     if opcionP == 'horario':
         return GenerarHorario()
     elif opcionP == 'calendario':
         return GenerarCalendario()
     elif opcionP == 'consejo':
-        return GenerarConsejo()
+        return GenerarConsejo(tipo)
     else:
         return NotificarActividad()
 
@@ -76,19 +76,22 @@ def GenerarHorario():
     return tipo_bloque, bloques, asignaturas
 
 def GenerarCalendario():
-    query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACTIVIDAD.ACT_FECHA) as mes, strftime('%Y',ACTIVIDAD.ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_INI, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"
+    query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACT_FECHA) as mes, strftime('%Y',ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_INI, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"
     rows = RunQuery(query)
     rows_list = list(rows)
 
     return rows_list
 
-def GenerarConsejo():
-    query = ''' SELECT CON_DESC 
-                FROM CONSEJO 
-                WHERE CON_TIPO NOT IN("recomendacionBuena", "recomendacionMedia", "recomendacionAlerta")
-                ORDER BY RANDOM() 
-                LIMIT 1; 
-            '''
+def GenerarConsejo(tipo):
+    if tipo != None:
+        query = "SELECT CON_DESC FROM CONSEJO WHERE CON_TIPO = '" + tipo + "' ORDER BY RANDOM() LIMIT 1;"
+    else:
+        query = ''' SELECT CON_DESC 
+                    FROM CONSEJO 
+                    WHERE CON_TIPO NOT IN("recomendacionBuena", "recomendacionMedia", "recomendacionAlerta")
+                    ORDER BY RANDOM() 
+                    LIMIT 1; 
+                '''
 
     consejo = list(RunQuery(query))
 
@@ -286,7 +289,6 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
 def CalcularNota(id):
     if id != None:
         n_tipo = "SELECT ASI_ID AS ramo, NOT_TIPO AS tipo, ROUND(AVG(NOT_VAL),1) AS promedio FROM NOTA, ASIGNATURA WHERE NOT_ID_ASI = '" + str(id) + "' AND ASI_EST = '1' AND ASI_ID = '" + str(id) + "'  GROUP BY NOT_TIPO"
-
     else:
         n_tipo =  """SELECT
                         ASI_ID AS ramo,
@@ -309,8 +311,8 @@ def CalcularNota(id):
 
 # Modulo Recomendar #
 
-def Recomendar(tipo):
-    if tipo == "estudios":
+def Recomendar(tipo_r):
+    if tipo_r == "estudios":
         query_promedio_notas = ''' SELECT ROUND(AVG(NOT_VAL),1)
                             FROM 
                                 NOTA, ASIGNATURA

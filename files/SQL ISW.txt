@@ -68,9 +68,9 @@ CREATE TABLE "TIPO_NOTA" (
 	PRIMARY KEY("TNOT_NOM")
 );
 
-INSERT INTO TIPO_NOTA VALUES("catedra", "notas teoricas de un curso");
-INSERT INTO TIPO_NOTA VALUES("laboratorio", "actividades practicas evaluadas");
-INSERT INTO TIPO_NOTA VALUES("taller", "actividades en clases evaluadas");
+INSERT INTO TIPO_NOTA VALUES("catedra", "Notas teoricas de un curso.");
+INSERT INTO TIPO_NOTA VALUES("laboratorio", "Actividades practicas evaluadas.");
+INSERT INTO TIPO_NOTA VALUES("taller", "Actividades en clases evaluadas.");
 
 
 CREATE TABLE NOTA (
@@ -100,10 +100,10 @@ CREATE TABLE PRIORIDAD (
 	PRIMARY KEY("PRI_NIVEL")  
 );
 
-INSERT INTO PRIORIDAD VALUES(1, "La prioridad es baja, se enviaran 1 notificaciones.", 1);
-INSERT INTO PRIORIDAD VALUES(2, "La prioridad es media, se enviaran 2 notificaciones.", 2);
-INSERT INTO PRIORIDAD VALUES(3, "La prioridad es media alta, se enviaran 3 notificaciones.", 3);
-INSERT INTO PRIORIDAD VALUES(4, "La prioridad es alta, se enviaran 4 notificaciones.", 4);
+INSERT INTO PRIORIDAD VALUES(1, "La prioridad es baja, se enviara una notificacion un dia antes.", 1);
+INSERT INTO PRIORIDAD VALUES(2, "La prioridad es media, se enviaran notificaciones 2 dias antes.", 2);
+INSERT INTO PRIORIDAD VALUES(3, "La prioridad es media alta, se enviaran notificaciones 3 dias antes.", 3);
+INSERT INTO PRIORIDAD VALUES(4, "La prioridad es alta, se enviaran notificaciones 4 dias antes.", 4);
 
 CREATE TABLE TIPO_ACTIVIDAD (
 	"TACT_TIPO"	TEXT NOT NULL,
@@ -111,8 +111,9 @@ CREATE TABLE TIPO_ACTIVIDAD (
 	PRIMARY KEY("TACT_TIPO")  
 );
 
-INSERT INTO TIPO_ACTIVIDAD VALUES("evaluativa", "actividades que son evaluadas");
-INSERT INTO TIPO_ACTIVIDAD VALUES("estudio", "estudiar para alguna asignatura");
+INSERT INTO TIPO_ACTIVIDAD VALUES("evaluativa", "Actividades que son evaluadas.");
+INSERT INTO TIPO_ACTIVIDAD VALUES("estudio", "Estudiar para alguna asignatura.");
+INSERT INTO TIPO_ACTIVIDAD VALUES("fisica", "Actividades de caracter fisica.");
 
 CREATE TABLE ACTIVIDAD (
 	"ACT_ID"    	INTEGER NOT NULL,
@@ -139,9 +140,6 @@ INSERT INTO ACTIVIDAD VALUES(NULL, 4, "Avance 4", "2021-01-15", "4pm", 2, "estud
 INSERT INTO ACTIVIDAD VALUES(NULL, 4, "Presentar avance 4", "2021-01-20", "6pm", 2, "evaluativa");
 INSERT INTO ACTIVIDAD VALUES(NULL, 7, "Avanzar Trabajo Lab 3", "2021-01-18", NULL, 4, "estudio");
 INSERT INTO ACTIVIDAD VALUES(NULL, 5, "Prueba 3", "2021-01-19", "6pm", 4, "evaluativa");
-INSERT INTO "main"."ACTIVIDAD"
-("ACT_ID_ASI", "ACT_DESC", "ACT_FECHA", "ACT_PRI", "ACT_TIPO")
-VALUES (5, 'aas', '2021-01-19', 4, 'evaluativa');
 
 CREATE TABLE TIPO_CONSEJO (
 	"TCON_NOM"	TEXT NOT NULL,
@@ -149,11 +147,13 @@ CREATE TABLE TIPO_CONSEJO (
 	PRIMARY KEY("TCON_NOM")
 );
 
-INSERT INTO TIPO_CONSEJO VALUES("fisico", "consejos de naturaleza fisica")
-INSERT INTO TIPO_CONSEJO VALUES("estudio", "Consejos y buenas pr�cticas para mejorar el estudio personal")
-INSERT INTO TIPO_CONSEJO VALUES("recomendacionBuena", "consejos relacionados con el buen rendimiento academico");
-INSERT INTO TIPO_CONSEJO VALUES("recomendacionMedia", "consejos relacionados con el normal rendimiento academico");
-INSERT INTO TIPO_CONSEJO VALUES("recomendacionMala", "consejos relacionados con el mal rendimiento academico")
+INSERT INTO TIPO_CONSEJO VALUES("bienestar_fisico", "Consejos de naturaleza fisica.");
+INSERT INTO TIPO_CONSEJO VALUES("bienestar_mental", "Consejos de salud mental.");
+INSERT INTO TIPO_CONSEJO VALUES("estudio", "Consejos y buenas practicas para mejorar el estudio personal.");
+INSERT INTO TIPO_CONSEJO VALUES("covid", "Consejos de salud e higiente dada la contingencia actual.");
+INSERT INTO TIPO_CONSEJO VALUES("recomendacionBuena", "Consejos relacionados con el buen rendimiento academico.");
+INSERT INTO TIPO_CONSEJO VALUES("recomendacionMedia", "Consejos relacionados con el normal rendimiento academico.");
+INSERT INTO TIPO_CONSEJO VALUES("recomendacionAlerta", "Consejos relacionados con el deficiente rendimiento academico.");
 
 CREATE TABLE "CONSEJO" (
 	"CON_ID"	INTEGER NOT NULL,
@@ -163,8 +163,12 @@ CREATE TABLE "CONSEJO" (
 	PRIMARY KEY("CON_ID" AUTOINCREMENT)
 );
 
+
+
+
+
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Tus calificaciones son buenas, no te vendria mal un descanso.")
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionMala", "Tus calificaciones estan un poco bajas, podrias estudiar unos minutos mal al dia.")
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionAlerta", "Tus calificaciones estan un poco bajas, podrias estudiar unos minutos mal al dia.")
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Toma un descanso, disfruta con tu familia.")
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Buenas notas, podrias jugar algun juego, que tal Transformice")
 

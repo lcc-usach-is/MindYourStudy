@@ -5,6 +5,8 @@ from des import *
 import re #importa modulo para expresiones regulares
 from variables import *
 
+from conex_bd import RunQuery
+
 regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$' #formato de correo
 
 ICON = "assets/favicon.ico"

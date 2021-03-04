@@ -6,6 +6,7 @@ from variables import *
 
 ICON = "assets/favicon.ico"
 
+from conex_bd import RunQuery
 # Modulos de interfaz grafica para la seccion Horario #
 
 def MostrarHorario(app, contenido):

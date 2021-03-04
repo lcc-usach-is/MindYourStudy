@@ -5,12 +5,13 @@ from variables import *
 
 from PIL import Image, ImageTk
 
+from conex_bd import RunQuery
+
 ICON = "assets/favicon.ico"
 
 # Modulos de interfaz grafica para la seccion Inicio #
 
 def MostrarInicio(app, contenido):    
-    #global buttons,contenido,buttons_ventana,ventanas
     
     EliminarBotones(buttons)
     EliminarBotones(buttons_ventana)
@@ -25,8 +26,7 @@ def MostrarInicio(app, contenido):
     str_version = version[0][0]
 
     # CONSEJO
-
-    consejo = GenerarConsejo()
+    consejo = EmitirPlanificacion('consejo')
 
     test = ImageTk.PhotoImage(Image.open("assets/chinchilla.png"))
 
@@ -37,7 +37,12 @@ def MostrarInicio(app, contenido):
 
     test = ImageTk.PhotoImage(Image.open("assets/text_bubble.png"))
 
-    label1 = tk.Label(contenido, text=consejo, font=("", 10, 'bold'), image=test, bg = '#D4E6F1', compound = 'center', wraplength = 230)
+    default_font_size = 10
+
+    if(len(consejo) > 160):
+        default_font_size = 8
+
+    label1 = tk.Label(contenido, text=consejo, font=("", default_font_size, 'bold'), image=test, bg = '#D4E6F1', compound = 'center', wraplength = 230)
     label1.image = test
     label1.place(x=155,y=310)
     buttons.append(label1)

@@ -5,6 +5,8 @@ from des import *
 
 from variables import *
 
+from conex_bd import RunQuery
+
 ICON = "assets/favicon.ico"
 
 #### FUNCIONES PARA EL MENU BAR ####

@@ -6,6 +6,8 @@ from variables import *
 
 import datetime
 
+from conex_bd import RunQuery
+
 ICON = "assets/favicon.ico"
 
 # Modulos de interfaz grafica para la seccion Actividad #
@@ -109,7 +111,7 @@ def MostrarCrearActividad(app, contenido):
         b.place(x=40,y=40)
         lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
         lista.place(x=40, y=95)
-        rows = list(RunQuery("SELECT ASI_NOM, ASI_ID FROM ASIGNATURA WHERE ASI_EST = '1'"))
+
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,'  '+ i[0])
@@ -396,7 +398,7 @@ def ModificarActividad(app, contenido,ventana, parameters, row): # Falta verific
 
 def MostrarEliminarActividad(app, contenido): 
 
-    rows = list(RunQuery("SELECT ACT_ID, ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now') AND ACT_ID_ASI = ASI_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"))
+    rows = list(RunQuery("SELECT ACT_ID, ACT_ID_ASI, ASI_NOM, ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now') AND ACT_ID_ASI = ASI_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"))
 
     if rows != []:
         EliminarBotones(buttons_ventana)
@@ -463,4 +465,5 @@ def EliminarTodoActividad(app, contenido,ventana, rows):
 
     MostrarActividad(app, contenido)
     messagebox.showinfo(message="Se han eliminado todas las actividades.", title="Mind your Study", parent=app)
+
 # Fin modulos de interfaz grafica para la seccion Actividad #

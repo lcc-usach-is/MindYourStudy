@@ -6,6 +6,8 @@ from variables import *
 
 from win10toast import ToastNotifier
 
+from conex_bd import RunQuery
+
 ICON = "assets/favicon.ico" 
 
 # Modulos de interfaz grafica para la seccion Nota #

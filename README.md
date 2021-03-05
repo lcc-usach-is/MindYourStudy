@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Mind your Study
 
 Aplicacion de Windows 10 para ayudar a los estudiantes universitarios a organizar sus estudios

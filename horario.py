@@ -103,7 +103,7 @@ def IngresarBloque(app, contenido):
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
         ventana.title("Crear Bloque")
-        ventana.geometry("800x580")
+        ventana.geometry("800x500")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
@@ -111,10 +111,10 @@ def IngresarBloque(app, contenido):
         # Lista Asignaturas
         
         b = tk.Label(ventana, text = ' Seleccione la asignatura del bloque a crear:', font=("", 15, 'bold'),justify="left")
-        b.place(x=40,y=40)
+        b.place(x=30,y=30)
 
-        lista = tk.Listbox(ventana, height=11, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=85)
+        lista = tk.Listbox(ventana, height=11, width=81,font=("", 12, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=85)
         
         for k in range(len(asignaturas)-1,-1,-1):
             i = asignaturas[k]
@@ -122,18 +122,18 @@ def IngresarBloque(app, contenido):
 
         # Lista Dia Semana
         b = tk.Label(ventana, text =  'Dia de la semana: ', font=("", 13, 'bold'),justify="left")
-        b.place(x=40,y=320)
+        b.place(x=30,y=320)
 
         dia_list = list(RunQuery("SELECT DIA_NOMBRE FROM DIA WHERE DIA_ID >'0'"))
         dia = ['{}'.format(*opcion) for opcion in dia_list]
 
         opcion_dia = tk.StringVar(ventana, value = '')
         nuevo_dia = tk.OptionMenu(ventana, opcion_dia, *dia)
-        nuevo_dia.place(x=200,y=318)
+        nuevo_dia.place(x=185,y=318)
         
         # Lista hora
         b = tk.Label(ventana, text =  'Hora: ', font=("", 13, 'bold'),justify="left")
-        b.place(x=40, y=370)
+        b.place(x=30, y=370)
 
         hora = list(RunQuery("SELECT BL_ID, BL_INI, BL_FIN FROM TIPO_BLOQUE"))
 
@@ -144,14 +144,14 @@ def IngresarBloque(app, contenido):
 
         opcion_hora = tk.StringVar(ventana, value = '')
         nuevo_hora = tk.OptionMenu(ventana, opcion_hora, *hora_list)
-        nuevo_hora.place(x=100, y=370)
+        nuevo_hora.place(x=90, y=368)
 
         a = tk.Button(ventana, text="Crear Bloque", command = lambda:  Crearbloque(app,contenido,ventana, (lista.curselection(), opcion_dia.get(), opcion_hora.get()), asignaturas, hora), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40, y=435)
+        a.place(x=30, y=422)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=210,y=435)
+        a.place(x=200,y=422)
 
         ventanas.append(ventana)
 
@@ -221,9 +221,9 @@ def MostrarEliminarBloque(app, contenido):
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona el bloque a eliminar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=20, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=85)
         
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
@@ -238,13 +238,13 @@ def MostrarEliminarBloque(app, contenido):
             lista.insert(0, i[2] + ' a las ' + hora + ': ' + asignatura)
         
         a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarBloque(app,contenido,ventana, rows, lista.curselection()), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=500)
 
         a = tk.Button(ventana, text="Borrar todo", command= lambda: EliminarTodoBloques(app,contenido,ventana, rows), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=205,y=435)
+        a.place(x=195,y=500)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=365,y=435)
+        a.place(x=355,y=500)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)

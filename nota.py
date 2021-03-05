@@ -30,7 +30,7 @@ def MostrarNota(app, contenido):
     b.place(x=350,y=450)
     buttons.append(b)
 
-    b = tk.Button(contenido, text="Calcular Nota", command = lambda: ElegirCalcularNota(app, contenido), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
+    b = tk.Button(contenido, text="Calcular Nota", command = lambda: ElegirCalcularNota(app), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
     b.place(x=360,y=510)
     buttons.append(b)
 
@@ -105,42 +105,43 @@ def MostrarIngresarNota(app, contenido):
         EliminarVentanas(ventanas)
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Ingresar Nota")
-        ventana.geometry("800x580")
+        ventana.title("Ingresar nota")
+        ventana.geometry("800x480")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la asignatura de la nota a ingresar:",font=("", 12, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=9, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=10, width=81,font=("", 12, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=70)
         asignaturas = list(RunQuery("SELECT ASI_NOM, ASI_ID FROM ASIGNATURA WHERE ASI_EST = '1'"))
+        
         for k in range(len(asignaturas)-1,-1,-1):
             i = asignaturas[k]
             lista.insert(0,'  '+ i[0])
         
         # Valor nota
         b = tk.Label(ventana, text =  'Nota: ' , font=("", 12, 'bold'),justify="left")
-        b.place(x=40, y=300)
+        b.place(x=30, y=290)
         valor_nota = tk.Entry(ventana, font=('', 12, ''))
-        valor_nota.place(x = 150, y = 300)  
+        valor_nota.place(x = 140, y = 290)  
         
         # Tipo nota
         b = tk.Label(ventana, text =  'Tipo Nota: ', font=("", 12, 'bold'),justify="left")
-        b.place(x=40, y = 350)
+        b.place(x=30, y = 340)
         tipo_nota = list(RunQuery("SELECT TNOT_NOM FROM TIPO_NOTA"))
         opcion_tipo_nota = tk.StringVar(ventana, value = '')
         nuevo_tipo_nota = tk.OptionMenu(ventana, opcion_tipo_nota, *tipo_nota)
-        nuevo_tipo_nota.place(x=150, y = 350)
+        nuevo_tipo_nota.place(x=140, y = 340)
 
 
         a = tk.Button(ventana, text="Ingresar Nota", command = lambda: IngresarNota(app, contenido,ventana, [lista.curselection(), valor_nota.get(), opcion_tipo_nota.get()], asignaturas), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=400)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=220,y=435)
+        a.place(x=210,y=400)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
@@ -208,27 +209,27 @@ def MostrarModificarNota(app, contenido):
         EliminarVentanas(ventanas)
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Modificar Actividad")
-        ventana.geometry("800x580")
+        ventana.title("Modificar nota")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la nota a modificar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=17, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=80)
 
         for k in range(len(notas)-1,-1,-1):
             i = notas[k]
             lista.insert(0,'  '+ i[2] + ': ' + i[3] + ', ' + str(i[4]))
         
         a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarNota(app, contenido, ventana, lista.curselection(), notas), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=445)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=445)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
@@ -248,6 +249,8 @@ def IngresarModificarNota(app, contenido, ventana, seleccion, rows):# Hay que el
 
     EliminarBotones(buttons_ventana)
     
+    ventana.geometry("800x450")
+
     k = rows[seleccion[0]]
 
     container = tk.Frame(ventana)
@@ -274,12 +277,12 @@ def IngresarModificarNota(app, contenido, ventana, seleccion, rows):# Hay que el
     # Valor nota antiguo
     tk.Label(scrollable_frame, text =  'Valor nota: ' + str(k[4]), font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )  
 
-    container.grid(row=1, column = 0, padx=20, pady=20,ipadx=125)
+    container.grid(row=1, column = 0, padx=29, pady=25,ipadx=125)
     canvas.pack(side="top", fill="x")
     scrollbar.pack(side="bottom", fill="x")
 
     frame2 = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=20, sticky="we")
+    frame2.grid(row=3, column = 0, padx=29, sticky="we")
     tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
     
     # Asignatura
@@ -301,10 +304,10 @@ def IngresarModificarNota(app, contenido, ventana, seleccion, rows):# Hay que el
     nuevo_tipo_nota.grid(row = 3, column = 1,sticky="nw")
     
     a = tk.Button(ventana, text="Modificar nota", command = lambda: ModificarNota(app, contenido, ventana, (k[1],opcion_tipo_nota.get(), valor_nota.get(),k[0]), k), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=20, y=370)
+    a.place(x=29, y=385)
 
     a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=270,y=370)
+    a.place(x=219,y=385)
 
 def ModificarNota(app, contenido,ventana, parameters, row):
 
@@ -345,29 +348,29 @@ def MostrarEliminarNota(app, contenido):
         EliminarVentanas(ventanas)
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Eliminar Nota")
-        ventana.geometry("800x580")
+        ventana.title("Eliminar nota")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
-        b = tk.Label(ventana, text="Selecciona la Nota a eliminar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b = tk.Label(ventana, text="Selecciona la nota a eliminar:",font=("", 20, 'bold'),justify="left")
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=17, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=80)
         
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,' '+i[1] + '. ' + i[2] + ': ' + str(i[3]))
         
         a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarNota(app, contenido, ventana, rows, lista.curselection()), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=445)
         
         a = tk.Button(ventana, text="Borrar todo", command = lambda: EliminarTodoNotas(app, contenido,ventana, rows), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=445)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=375,y=435)
+        a.place(x=375,y=445)
 
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
@@ -411,7 +414,7 @@ def EliminarTodoNotas(app, contenido, ventana, rows):
     MostrarNota(app, contenido)
     messagebox.showinfo(message="Se han eliminado todas las notas.", title="Mind your Study", parent=app)
 
-def ElegirCalcularNota(app, contenido):
+def ElegirCalcularNota(app):
 
     asignaturas = list(RunQuery("SELECT ASI_NOM, ASI_ID FROM ASIGNATURA WHERE ASI_EST = '1'"))
 
@@ -422,26 +425,26 @@ def ElegirCalcularNota(app, contenido):
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
         ventana.title("Calcular Nota")
-        ventana.geometry("800x580")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la asignatura de la nota que desee calcular:",font=("", 18, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=20, width=80,font=("", 12, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=80)
 
         for k in range(len(asignaturas)-1,-1,-1):
             i = asignaturas[k]
             lista.insert(0,'  '+ i[0])
         
         a = tk.Button(ventana, text="Calcular Nota", command = lambda: MostrarCalcularNota(ventana, lista.curselection(), asignaturas), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=500)
+        a.place(x=30,y=435)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=220,y=500)
+        a.place(x=210,y=435)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
@@ -458,10 +461,12 @@ def MostrarCalcularNota(ventana, seleccion, asignaturas):
 
     EliminarBotones(buttons_ventana)
 
+    ventana.geometry("800x580")
+
     k = None if seleccion == () else seleccion[0]
 
     b = tk.Label(ventana, text="Notas:" ,font=("", 17, 'bold'),justify="left")
-    b.place(x=40,y=40)
+    b.place(x=30,y=30)
    
     container = tk.Frame(ventana)
     canvas = tk.Canvas(container, width=700, height=395)
@@ -539,12 +544,12 @@ def MostrarCalcularNota(ventana, seleccion, asignaturas):
                 buttons.append(b)
                 r = r + 1
     
-    container.place(x=40,y=80)
+    container.place(x=30,y=70)
     canvas.pack(side="left", fill="both")
     scrollbar.pack(side="right", fill="y")
 
     a = tk.Button(ventana, text="Cerrar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=40,y=500)
+    a.place(x=30,y=490)
     
     buttons_ventana.append(b)
     

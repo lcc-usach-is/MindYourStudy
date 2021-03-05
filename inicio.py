@@ -37,12 +37,7 @@ def MostrarInicio(app, contenido):
 
     test = ImageTk.PhotoImage(Image.open("assets/text_bubble.png"))
 
-    default_font_size = 10
-
-    if(len(consejo) > 160):
-        default_font_size = 8
-
-    label1 = tk.Label(contenido, text=consejo, font=("", default_font_size, 'bold'), image=test, bg = '#D4E6F1', compound = 'center', wraplength = 230)
+    label1 = tk.Label(contenido, text=consejo, font=("", 10, 'bold'), image=test, bg = '#D4E6F1', compound = 'center', wraplength = 230)
     label1.image = test
     label1.place(x=155,y=310)
     buttons.append(label1)

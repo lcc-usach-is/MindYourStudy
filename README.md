@@ -38,8 +38,5 @@ También puedes mirar la lista de todos los [contribuyentes](https://github.com/
 ## Licencia 📄
 
 Este proyecto está bajo la Licencia (GNU Version 3) - mira el archivo [LICENSE.md](https://raw.githubusercontent.com/lcc-usach-is/MindYourStudy/main/files/LICENSE) para detalles
-=======
-# MindYourStudy
-Aplicacion de Windows para organizar estudios
->>>>>>> a187483225f7781e1b28f3d015ec29eb792da332
+
 

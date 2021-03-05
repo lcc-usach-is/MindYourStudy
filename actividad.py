@@ -24,14 +24,20 @@ def MostrarActividad(app, contenido):
 
     b = tk.Button(contenido, text="Crear Actividad", command = lambda: MostrarCrearActividad(app, contenido), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=40,y=480)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
     b = tk.Button(contenido, text="Modificar Actividad", command = lambda: MostrarModificarActividad(app, contenido, rows), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=208,y=480)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
     b = tk.Button(contenido, text="Eliminar Actividad", command = lambda: MostrarEliminarActividad(app, contenido), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
     b.place(x=400,y=480)
+    b["bg"] = "#fbf8be"
+    b["activebackground"] = "#e3e0ac"
     buttons.append(b)
 
     container = tk.Frame(contenido)

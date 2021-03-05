@@ -12,7 +12,7 @@ ICON = "assets/favicon.ico"
 
 # Modulos de interfaz grafica para la seccion Actividad #
 
-# Falta verificar que las fechas sean proximas, eliminar los objetos creados de algunas funciones y hacer x e y scrollable cuando se seleccionan las actividades.
+# Falta verificar que las fechas sean proximas, eliminar los objetos creados de algunas funciones.
 
 def MostrarActividad(app, contenido):
 
@@ -23,21 +23,21 @@ def MostrarActividad(app, contenido):
     rows = EmitirPlanificacion('calendario')
 
     b = tk.Button(contenido, text="Crear Actividad", command = lambda: MostrarCrearActividad(app, contenido), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=40,y=480)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
+    b.place(x=40,y=480)
     buttons.append(b)
 
     b = tk.Button(contenido, text="Modificar Actividad", command = lambda: MostrarModificarActividad(app, contenido, rows), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=208,y=480)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
+    b.place(x=208,y=480)
     buttons.append(b)
 
     b = tk.Button(contenido, text="Eliminar Actividad", command = lambda: MostrarEliminarActividad(app, contenido), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-    b.place(x=400,y=480)
     b["bg"] = "#fbf8be"
     b["activebackground"] = "#e3e0ac"
+    b.place(x=400,y=480)
     buttons.append(b)
 
     container = tk.Frame(contenido)
@@ -106,28 +106,29 @@ def MostrarCrearActividad(app, contenido):
 
         EliminarBotones(buttons_ventana)
         EliminarVentanas(ventanas)
+        
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Crear Actividad")
-        ventana.geometry("800x580")
+        ventana.title("Crear actividad")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la asignatura de la actividad a crear:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=80)
 
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,'  '+ i[0])
         
         a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarCrearActividad(app, contenido,ventana, lista.curselection(), rows), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=435)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=435)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
@@ -148,9 +149,11 @@ def IngresarCrearActividad(app, contenido, ventana, seleccion, rows): # falta el
 
     EliminarBotones(buttons_ventana)
 
+    ventana.geometry("800x365")
+
     k = rows[seleccion[0]]
     frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=15, pady=30, sticky="ew")
+    frame2.grid(row=3, column = 0, padx=30, pady=25, sticky="ew")
     tk.Label(frame2, text = 'Ingrese los datos de la actividad que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
     
     # Asignatura
@@ -165,7 +168,7 @@ def IngresarCrearActividad(app, contenido, ventana, seleccion, rows): # falta el
     tk.Label(frame2, text =  'Fecha(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     fecha = tk.Entry(frame2 )
     fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
+    tk.Label(frame2, text =  '      Formato: AAAA-MM-DD      ' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
     # Hora inicio
     tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     hora = tk.Entry(frame2)
@@ -244,34 +247,35 @@ def CrearActividad(app, contenido, ventana, parameters): # Falta verificar que l
 # Modificar actividad
 
 def MostrarModificarActividad(app, contenido, rows): # Es necesario recibir rows? 
+    
+    # SELECT ACT_ID,ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID ORDER BY ACT_FECHA
 
     if rows != []:
+
         EliminarBotones(buttons_ventana)
         EliminarVentanas(ventanas)
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Modificar Actividad")
-        ventana.geometry("800x580")
+        ventana.title("Modificar actividad")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
-        # SELECT ACT_ID,ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID ORDER BY ACT_FECHA
-
         b = tk.Label(ventana, text="Selecciona la actividad a modificar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
-        
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=80)
+
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,'  '+i[3] + '-' + i[2] + '-' + i[1] + '. ' + i[4] + ': ' + i[5])
         
         a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarActividad(app, contenido,ventana, lista.curselection(), rows), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=435)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=435)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)
@@ -292,6 +296,7 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
 
     EliminarBotones(buttons_ventana)
 
+    ventana.geometry("800x580")
     k = rows[seleccion[0]]
     
     container = tk.Frame(ventana)
@@ -324,12 +329,12 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
     # Tipo
     tk.Label(scrollable_frame, text =  'Tipo: ' + k[7], font=("", 13, 'bold'),justify="left").grid(row = 7, column = 0,sticky="w") 
     
-    container.grid(row=1, column = 0, padx=20, pady=20,ipadx=125)
+    container.grid(row=1, column = 0, padx=30, pady=25,ipadx=124)
     canvas.pack(side="top", fill="x")
     scrollbar.pack(side="bottom", fill="x")
 
     frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=20, sticky="we")
+    frame2.grid(row=3, column = 0, padx=30, sticky="we")
     tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
     
     # Asignatura
@@ -343,7 +348,7 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
     tk.Label(frame2, text =  'Fecha: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e" )
     nueva_fecha = tk.Entry(frame2 )
     nueva_fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
-    tk.Label(frame2, text =  'Formato: AAAA-MM-DD' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
+    tk.Label(frame2, text =  '      Formato: AAAA-MM-DD     ' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
     # Hora inicio
     tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     nueva_hora = tk.Entry(frame2)
@@ -363,10 +368,10 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
     nueva_tipo.grid(row=6, column=1, sticky="w")
 
     a = tk.Button(ventana, text="Modificar actividad", command = lambda: ModificarActividad(app, contenido,ventana, (nueva_descripcion.get(),nueva_fecha.get(), nueva_hora.get(),opcion_prioridad.get(), opcion_tipo.get(),k[9],k[10]), k), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=20, y=500)
+    a.place(x=30, y=510)
 
     a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=270,y=500)
+    a.place(x=280,y=510)
     
 def ModificarActividad(app, contenido,ventana, parameters, row): # Falta verificar que la fecha sea proxima a la actual
 
@@ -417,19 +422,19 @@ def MostrarEliminarActividad(app, contenido):
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la actividad a eliminar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=20, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=85)
         
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,' '+i[5] + '. ' + i[2] + ': ' + i[4])
         
         a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarActividad(app, contenido,ventana, rows, lista.curselection()), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=510)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=510)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)

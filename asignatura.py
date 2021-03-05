@@ -13,7 +13,7 @@ ICON = "assets/favicon.ico"
 
 # Modulos de interfaz grafica para la seccion Asignatura #
 
-def MostrarAsignatura(app, contenido, ):
+def MostrarAsignatura(app, contenido):
 
     EliminarBotones(buttons)
     EliminarBotones(buttons_ventana)
@@ -76,7 +76,7 @@ def MostrarAsignatura(app, contenido, ):
         buttons.append(nueva_asig)
 
         b = tk.Button(contenido, text="Seleccionar", command = lambda: DatosAsignatura(scrollable_frame, opcion_asig.get()), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0)
-        b.place(x=380,y=25)
+        b.place(x=400,y=25)
         b["bg"] = "#fbf8be"
         b["activebackground"] = "#e3e0ac" 
         buttons.append(b)
@@ -124,13 +124,13 @@ def IngresarCrearAsignatura(app, contenido): # falta eliminar los objetos usados
 
     ventana = tk.Toplevel(app, bg="#D4E6F1")
     ventana.title("Crear Asignatura")
-    ventana.geometry("640x350")
+    ventana.geometry("640x310")
     ventana.resizable(False, False)
     ventana.iconbitmap(ICON)
     ventana.focus()
 
     frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=30, pady=30, sticky="ew")
+    frame2.grid(row=3, column = 0, padx=27, pady=30, sticky="ew")
     tk.Label(frame2, text = 'Ingrese los datos de la asignatura que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
     
     # Asignatura
@@ -153,11 +153,11 @@ def IngresarCrearAsignatura(app, contenido): # falta eliminar los objetos usados
     tk.Label(frame2, text ='(*) espacio obligatorio', font=("", 13), justify="left").grid(row=5, column=0, padx=10, sticky="w")
 
     a = tk.Button(ventana, text="Crear asignatura", command = lambda:  CrearAsignatura(app, contenido, ventana, (asignatura.get(), descripcion.get(), nom_profesor.get(), mail_profesor.get())), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=30, y=262)
+    a.place(x=30, y=240)
     buttons_ventana.append(a)
 
     a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=250,y=262)
+    a.place(x=250,y=240)
     buttons_ventana.append(a)
 
 
@@ -220,28 +220,29 @@ def MostrarModificarAsignatura(app, contenido):
 
         EliminarBotones(buttons_ventana)
         EliminarVentanas(ventanas)
+
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Modificar Asignatura")
-        ventana.geometry("800x580")
+        ventana.title("Modificar asignatura")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la asignatura a modificar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=85)
         
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,'  '+i[1] + ': ' + i[2])
         
         a = tk.Button(ventana, text="Seleccionar", command = lambda: IngresarModificarAsignatura(app, contenido, ventana, lista.curselection(), rows), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=435)
         buttons_ventana.append(a)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=435)
         buttons_ventana.append(a)
         
         buttons_ventana.append(b)
@@ -291,12 +292,12 @@ def IngresarModificarAsignatura(app, contenido, ventana, seleccion, rows): # Hay
     # Correo profesor
     tk.Label(scrollable_frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=5, sticky="w")
     
-    container.grid(row=1, column = 0, padx=20, pady=20,ipadx=125)
+    container.grid(row=1, column = 0, padx=29, pady=20,ipadx=125)
     canvas.pack(side="top", fill="x")
     scrollbar.pack(side="bottom", fill="x")
 
     frame2  = tk.Frame(ventana)
-    frame2.grid(row=3, column = 0, padx=20, ipady=5, sticky="ew")
+    frame2.grid(row=3, column = 0, padx=29, ipady=5, sticky="ew")
     tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, padx=5, pady=(5,0), sticky="w")
     
     # Asignatura
@@ -317,10 +318,10 @@ def IngresarModificarAsignatura(app, contenido, ventana, seleccion, rows): # Hay
     nuevo_correo.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
 
     a = tk.Button(ventana, text="Modificar asignatura", command = lambda: ModificarAsignatura(app, contenido, (nueva_asig.get(),nueva_descripcion.get(), nuevo_profesor.get(),nuevo_correo.get()), k, ventana), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-    a.place(x=20, y=500)
+    a.place(x=30, y=450)
 
     a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-    a.place(x=280,y=500)
+    a.place(x=290,y=450)
 
 def ModificarAsignatura(app, contenido, parameters, row,ventana):
     
@@ -352,17 +353,17 @@ def MostrarCambiarEstado(app, contenido):
         EliminarVentanas(ventanas)
         
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Cambiar Estado")
-        ventana.geometry("800x580")
+        ventana.title("Cambiar estado")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
-        b = tk.Label(ventana, text="Selecciona la asignatura para cambiar su estado actual:",font=("", 15, 'bold'),justify="left")
-        b.place(x=40,y=30)
+        b = tk.Label(ventana, text="Selecciona la asignatura para cambiar su estado actual:",font=("", 17, 'bold'),justify="left")
+        b.place(x=30,y=30)
 
-        lista = tk.Listbox(ventana, height=12, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=105)
+        lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=85)
 
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
@@ -372,10 +373,10 @@ def MostrarCambiarEstado(app, contenido):
                 lista.insert(0,'  '+i[1] + ': NO ACTIVA')
         
         a = tk.Button(ventana, text="Seleccionar", command = lambda: CambiarEstado(app, contenido, ventana, rows, lista.curselection()), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=500)
+        a.place(x=30,y=435)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=500)
+        a.place(x=190,y=435)
 
         ventanas.append(ventana)
 
@@ -432,26 +433,26 @@ def MostrarEliminarAsignatura(app, contenido):
         EliminarVentanas(ventanas)
 
         ventana = tk.Toplevel(app, bg="#D4E6F1")
-        ventana.title("Eliminar Asignatura")
-        ventana.geometry("800x580")
+        ventana.title("Eliminar asignatura")
+        ventana.geometry("800x520")
         ventana.resizable(False, False)
         ventana.iconbitmap(ICON)
         ventana.focus()
 
         b = tk.Label(ventana, text="Selecciona la asignatura a eliminar:",font=("", 20, 'bold'),justify="left")
-        b.place(x=40,y=40)
-        lista = tk.Listbox(ventana, height=16, width=80,font=("", 13, ""), bg = 'SystemButtonFace')
-        lista.place(x=40, y=95)
+        b.place(x=30,y=30)
+        lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
+        lista.place(x=30, y=80)
         
         for k in range(len(rows)-1,-1,-1):
             i = rows[k]
             lista.insert(0,' '+i[1] + ': ' + i[2])
         
         a = tk.Button(ventana, text="Seleccionar", command= lambda: EliminarAsignatura(app, contenido, ventana, rows, lista.curselection()), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
-        a.place(x=40,y=435)
+        a.place(x=30,y=435)
 
         a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
-        a.place(x=200,y=435)
+        a.place(x=190,y=435)
         
         buttons_ventana.append(b)
         buttons_ventana.append(lista)

@@ -57,9 +57,9 @@ def MostrarHorario(app, contenido):
             elif bl_dia != []:
                 for bloque in bl_dia:
                     if(bloque[0]+1 == j):
-                        color = '#fbf8be'
                         for asig in asig_list:
                             if(bloque[1] == asig[0]):
+                                color = '#fbf8be'
                                 t = asig[1]
 
             b = tk.Button(scrollable_frame, text=t, font=("", 8), wraplength=80, width=w, height=h, relief = tk.GROOVE, bg=color)

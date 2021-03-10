@@ -31,7 +31,7 @@ def VentanaAbout(app):
     tab2 = ttk.Frame(tabControl)
 
     tabControl.add(tab1, text='Acerca de')
-    tabControl.add(tab2, text='Autor')
+    tabControl.add(tab2, text='Documentacion')
     tabControl.pack(expand=1, fill="both")
 
     #### TAB INFORMACION ####
@@ -59,10 +59,17 @@ def VentanaAbout(app):
     link2.grid(column = 1,row = 3,padx = 0,pady = 10, sticky="w")
     link2.bind("<Button-1>", lambda e: callback("https://raw.githubusercontent.com/lcc-usach-is/MindYourStudy/main/LICENSE"))
 
-    #### TAB AUTOR ####
+    #### TAB DOCUMENTACION ####
 
-    ttk.Label(tab2, text ="Autor 1:").grid(column=0, row=0 ,padx =20, pady = 30, sticky="e")
-    tk.Label(tab2, text ="autor1@algo.com").grid(column=1, row=0, padx=10, pady=10, sticky="w")
+    #fuente consejos
+    link3 = tk.Label(tab2, text ="- Bibliografia de consejos", fg = 'blue', cursor="hand2")
+    link3.grid(column=0, row=0 ,padx =20, pady = 20, sticky="w")
+    link3.bind("<Button-1>", lambda e: callback("https://github.com/lcc-usach-is/MindYourStudy/blob/main/files/consejos_source.txt"))
+
+    #Manual de usuario
+    link4 = tk.Label(tab2, text ="- Manual de usuario", fg = 'blue', cursor="hand2")
+    link4.grid(column=0, row=1 ,padx =20, pady = 20, sticky="w")
+    link4.bind("<Button-1>", lambda e: callback("https://github.com/lcc-usach-is/MindYourStudy"))
 
     #boton de confirmacion para cerrar la ventana
     a = tk.Button(ventana, text="OK", command = ventana.destroy, relief = tk.SOLID, bd=1, padx=10)

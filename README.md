@@ -10,8 +10,9 @@ _Para obtener la ultima version del software, ingresa [aqui](https://www.mediafi
 
 _Los requisitos mínimos del del software son_
 
-| *RAM* | 256 MB |
+|     |     |
 | --- | --- |
+| *RAM* | 256 MB |
 | *Espacio de almacenamiento* | 100 MB |
 | *Sistema Operativo* | Windows 10 |
 

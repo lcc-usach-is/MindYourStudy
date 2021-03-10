@@ -27,7 +27,7 @@ def MostrarNota(app, contenido):
     buttons.append(b)
 
     b = tk.Button(contenido, text="Modificar Nota", command = lambda: MostrarModificarNota(app, contenido), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")
-    b.place(x=350,y=450)
+    b.place(x=356,y=450)
     buttons.append(b)
 
     b = tk.Button(contenido, text="Calcular Nota", command = lambda: ElegirCalcularNota(app), relief = tk.SOLID, font=("", 13, 'bold'), bd=1, padx=0, bg = "#fbf8be", activebackground = "#e3e0ac")

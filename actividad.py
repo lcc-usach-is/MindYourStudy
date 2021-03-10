@@ -169,26 +169,22 @@ def IngresarCrearActividad(app, contenido, ventana, seleccion, rows): # falta el
     fecha = tk.Entry(frame2 )
     fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
     tk.Label(frame2, text =  '      Formato: AAAA-MM-DD      ' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
-    # Hora inicio
-    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
-    hora = tk.Entry(frame2)
-    hora.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
     # Prioridad
-    tk.Label(frame2, text =  'Prioridad(*): ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
+    tk.Label(frame2, text =  'Prioridad(*): ', font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     lista_prioridad = list(RunQuery('SELECT PRI_NIVEL FROM PRIORIDAD'))
     opcion_prioridad = tk.StringVar(frame2, value = '')
     prioridad = tk.OptionMenu(frame2, opcion_prioridad, *lista_prioridad)
-    prioridad.grid(row=5, column=1, sticky="w")
+    prioridad.grid(row=4, column=1, sticky="w")
     # Tipo
-    tk.Label(frame2, text =  'Tipo(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="e")
+    tk.Label(frame2, text =  'Tipo(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
     lista_tipo = list(RunQuery('SELECT TACT_TIPO FROM TIPO_ACTIVIDAD'))
     opcion_tipo = tk.StringVar(frame2, value = '')
     tipo = tk.OptionMenu(frame2, opcion_tipo, *lista_tipo)
-    tipo.grid(row=6, column=1, sticky="w")
+    tipo.grid(row=5, column=1, sticky="w")
 
     tk.Label(frame2, text ='(*) espacio obligatorio', font=("", 13), justify="left").grid(row=7, column=0, padx=10, sticky="w")
 
-    a = tk.Button(ventana, text="Crear actividad", command = lambda:  CrearActividad(app, contenido,ventana, (k[1], descripcion.get(), fecha.get(), hora.get(), opcion_prioridad.get(), opcion_tipo.get())), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a = tk.Button(ventana, text="Crear actividad", command = lambda:  CrearActividad(app, contenido,ventana, (k[1], descripcion.get(), fecha.get(), opcion_prioridad.get(), opcion_tipo.get())), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=30, y=290)
 
     a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
@@ -222,17 +218,16 @@ def CrearActividad(app, contenido, ventana, parameters): # Falta verificar que l
             messagebox.showinfo(message="Debes ingresar una fecha valida.", title="Mind your Study", parent=ventana)
             return
 
-    fecha = parameters[2] 
-    hora = parameters[3]
+    fecha = parameters[2]
 
-    if parameters[4] != '':
-        prioridad = parameters[4].translate({ord(i):None for i in "()',"})
+    if parameters[3] != '':
+        prioridad = parameters[3].translate({ord(i):None for i in "()',"})
     else:
         messagebox.showinfo(message="Debes ingresar una prioridad.", title="Mind your Study", parent=ventana)
         return
         
-    if parameters[5] != '':
-        tipo = parameters[5].translate({ord(i):None for i in "()',"})
+    if parameters[4] != '':
+        tipo = parameters[4].translate({ord(i):None for i in "()',"})
     else:
         messagebox.showinfo(message="Debes ingresar una tipo de actividad.", title="Mind your Study", parent=ventana)
         return
@@ -240,7 +235,7 @@ def CrearActividad(app, contenido, ventana, parameters): # Falta verificar que l
     
     # Fin validacion de datos
 
-    RegistroActividad((parameters[0], descripcion, fecha, hora, prioridad, tipo),'C')
+    RegistroActividad((parameters[0], descripcion, fecha, prioridad, tipo),'C')
     MostrarActividad(app, contenido)
     messagebox.showinfo(message="Se ha creado la actividad correctamente.", title="Mind your Study", parent=app)
 
@@ -248,7 +243,7 @@ def CrearActividad(app, contenido, ventana, parameters): # Falta verificar que l
 
 def MostrarModificarActividad(app, contenido, rows): # Es necesario recibir rows? 
     
-    # SELECT ACT_ID,ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID ORDER BY ACT_FECHA
+    # SELECT ACT_ID,ACT_ID_ASI, ASI_NOM,ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID ORDER BY ACT_FECHA
 
     if rows != []:
 
@@ -322,12 +317,10 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
     tk.Label(scrollable_frame, text =  'Descripcion: ' + k[5], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, sticky="w")  
     # Fecha antigua
     tk.Label(scrollable_frame, text =  'Fecha: ' + k[3] + '-' + k[2] + '-' + k[1], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="w" )   
-    # Hora inicio
-    tk.Label(scrollable_frame, text =  'Hora inicio: ' + xstr(k[8]), font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w")    
     # Prioridad
-    tk.Label(scrollable_frame, text =  'Prioridad: ' + xstr(k[6]), font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="w") 
+    tk.Label(scrollable_frame, text =  'Prioridad: ' + xstr(k[6]), font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="w") 
     # Tipo
-    tk.Label(scrollable_frame, text =  'Tipo: ' + k[7], font=("", 13, 'bold'),justify="left").grid(row = 7, column = 0,sticky="w") 
+    tk.Label(scrollable_frame, text =  'Tipo: ' + k[7], font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="w") 
     
     container.grid(row=1, column = 0, padx=30, pady=25,ipadx=124)
     canvas.pack(side="top", fill="x")
@@ -349,25 +342,21 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
     nueva_fecha = tk.Entry(frame2 )
     nueva_fecha.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
     tk.Label(frame2, text =  '      Formato: AAAA-MM-DD     ' , font=('', 10, ''),justify="left").grid(row = 3, column = 5,sticky="ew" )
-    # Hora inicio
-    tk.Label(frame2, text =  'Hora inicio: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
-    nueva_hora = tk.Entry(frame2)
-    nueva_hora.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
     # Prioridad
-    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
+    tk.Label(frame2, text =  'Prioridad: ', font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     prioridad = list(RunQuery('SELECT PRI_NIVEL FROM PRIORIDAD'))
     opcion_prioridad = tk.StringVar(frame2, value = xstr(k[6]))
     nueva_prioridad = tk.OptionMenu(frame2, opcion_prioridad, *prioridad)
-    nueva_prioridad.grid(row=5, column=1, sticky="w")
+    nueva_prioridad.grid(row=4, column=1, sticky="w")
     # Tipo
-    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 6, column = 0,sticky="e")
+    tk.Label(frame2, text =  'Tipo: ' , font=("", 13, 'bold'),justify="left").grid(row = 5, column = 0,sticky="e")
     tipo = list(RunQuery('SELECT TACT_TIPO FROM TIPO_ACTIVIDAD'))
 
     opcion_tipo = tk.StringVar(frame2, value = k[7])
     nueva_tipo = tk.OptionMenu(frame2, opcion_tipo, *tipo)
-    nueva_tipo.grid(row=6, column=1, sticky="w")
+    nueva_tipo.grid(row=5, column=1, sticky="w")
 
-    a = tk.Button(ventana, text="Modificar actividad", command = lambda: ModificarActividad(app, contenido,ventana, (nueva_descripcion.get(),nueva_fecha.get(), nueva_hora.get(),opcion_prioridad.get(), opcion_tipo.get(),k[9],k[10]), k), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
+    a = tk.Button(ventana, text="Modificar actividad", command = lambda: ModificarActividad(app, contenido,ventana, (nueva_descripcion.get(),nueva_fecha.get(),opcion_prioridad.get(), opcion_tipo.get(),k[8],k[9]), k), relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=0)
     a.place(x=30, y=510)
 
     a = tk.Button(ventana, text="Cancelar", command = ventana.destroy, relief = tk.SOLID, font=("", 17, 'bold'), bd=1, padx=10)
@@ -395,13 +384,12 @@ def ModificarActividad(app, contenido,ventana, parameters, row): # Falta verific
             return
 
     fecha = row[3] + '-' + row[2] + '-' + row[1] if parameters[1] == '' else parameters[1] # Verificacion fecha
-    hora = row[8] if parameters[2] == '' else parameters[2]
-    prioridad = parameters[3].translate({ord(i):None for i in "()',"})
-    tipo = parameters[4].translate({ord(i):None for i in "()',"})
+    prioridad = parameters[2].translate({ord(i):None for i in "()',"})
+    tipo = parameters[3].translate({ord(i):None for i in "()',"})
     
     # Fin validacion de datos
 
-    RegistroActividad((descripcion, fecha, hora, prioridad, tipo, parameters[5], parameters[6]),'M')
+    RegistroActividad((descripcion, fecha, prioridad, tipo, parameters[4], parameters[5]),'M')
     MostrarActividad(app, contenido)
     messagebox.showinfo(message="Se ha modificado la actividad correctamente.", title="Mind your Study", parent=app)
 
@@ -409,7 +397,7 @@ def ModificarActividad(app, contenido,ventana, parameters, row): # Falta verific
 
 def MostrarEliminarActividad(app, contenido): 
 
-    rows = list(RunQuery("SELECT ACT_ID, ACT_ID_ASI, ASI_NOM, ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_INI, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now') AND ACT_ID_ASI = ASI_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"))
+    rows = list(RunQuery("SELECT ACT_ID, ACT_ID_ASI, ASI_NOM, ACT_ID_ASI, ACT_DESC, ACT_FECHA, ACT_PRI, ACT_TIPO FROM ACTIVIDAD, ASIGNATURA WHERE  ACT_FECHA >= date('now') AND ACT_ID_ASI = ASI_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"))
 
     if rows != []:
         EliminarBotones(buttons_ventana)

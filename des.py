@@ -44,9 +44,9 @@ def RegistroNota(n, case):
 
 def RegistroActividad(a, case):
     if case == 'C':
-        query = 'INSERT INTO ACTIVIDAD VALUES(NULL,?,?,?,?,?,?)'
+        query = 'INSERT INTO ACTIVIDAD VALUES(NULL,?,?,?,?,?)'
     elif case == 'M':
-        query = 'UPDATE ACTIVIDAD SET ACT_DESC = ?, ACT_FECHA = ?, ACT_INI = ?, ACT_PRI = ?, ACT_TIPO = ? WHERE ACT_ID = ? AND ACT_ID_ASI = ?'
+        query = 'UPDATE ACTIVIDAD SET ACT_DESC = ?, ACT_FECHA = ?, ACT_PRI = ?, ACT_TIPO = ? WHERE ACT_ID = ? AND ACT_ID_ASI = ?'
     elif case == 'E':
         query = 'DELETE FROM ACTIVIDAD WHERE ACT_ID = ? AND ACT_ID_ASI = ?'
 
@@ -76,7 +76,7 @@ def GenerarHorario():
     return tipo_bloque, bloques, asignaturas
 
 def GenerarCalendario():
-    query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACT_FECHA) as mes, strftime('%Y',ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_INI, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"
+    query = "SELECT DIA_NOMBRE as dia, strftime('%d', ACT_FECHA) as dia_mes, strftime('%m',ACT_FECHA) as mes, strftime('%Y',ACT_FECHA) as anyo, ASI_NOM, ACT_DESC, ACT_PRI, ACT_TIPO, ACT_ID,ACT_ID_ASI FROM ACTIVIDAD, ASIGNATURA, DIA WHERE  ACT_FECHA >= date('now')  AND ACT_ID_ASI = ASI_ID AND strftime('%w', ACT_FECHA) = DIA_ID AND ASI_EST = '1' ORDER BY ACT_FECHA"
     rows = RunQuery(query)
     rows_list = list(rows)
 
@@ -147,8 +147,7 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
                             ASI_NOM, 
                             ACT_DESC, 
                             ACT_PRI, 
-                            ACT_TIPO, 
-                            ACT_INI 
+                            ACT_TIPO
                         FROM 
                             ACTIVIDAD, 
                             ASIGNATURA, 
@@ -171,8 +170,7 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
                             ASI_NOM, 
                             ACT_DESC, 
                             ACT_PRI, 
-                            ACT_TIPO, 
-                            ACT_INI 
+                            ACT_TIPO
                         FROM 
                             ACTIVIDAD, 
                             ASIGNATURA, 
@@ -195,8 +193,7 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
                             ASI_NOM, 
                             ACT_DESC, 
                             ACT_PRI, 
-                            ACT_TIPO, 
-                            ACT_INI 
+                            ACT_TIPO
                         FROM 
                             ACTIVIDAD, 
                             ASIGNATURA, 
@@ -219,8 +216,7 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
                             ASI_NOM, 
                             ACT_DESC, 
                             ACT_PRI, 
-                            ACT_TIPO, 
-                            ACT_INI 
+                            ACT_TIPO
                         FROM 
                             ACTIVIDAD, 
                             ASIGNATURA, 
@@ -243,8 +239,7 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
                             ASI_NOM, 
                             ACT_DESC, 
                             ACT_PRI, 
-                            ACT_TIPO, 
-                            ACT_INI 
+                            ACT_TIPO
                         FROM 
                             ACTIVIDAD, 
                             ASIGNATURA, 
@@ -266,8 +261,7 @@ def ResumirActividades(opcionA, tiempo): # Es posible ahorrar lineas
                             ASI_NOM, 
                             ACT_DESC, 
                             ACT_PRI, 
-                            ACT_TIPO, 
-                            ACT_INI 
+                            ACT_TIPO
                         FROM 
                             ACTIVIDAD, 
                             ASIGNATURA, 

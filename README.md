@@ -8,10 +8,11 @@ _Para obtener la ultima version del software, ingresa [aqui](https://www.mediafi
 
 ### Pre-requisitos 📋
 
-_Los requisitos del software son_
+_Los requisitos mínimos del del software son_
 
-* Dispositivo con Sistema Operativo Windows 10
-* Al menos 30mb disponibles en el disco
+| *RAM* | 256 MB |
+| *Espacio de almacenamiento* | 100 MB |
+| *Sistema Operativo* | Windows 10 |
 
 ### Instalación 🔧
 

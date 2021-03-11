@@ -2,7 +2,7 @@
 Copyright (C) <2021> <LCC Equipo 1>
 
 Este programa es software libre: puede redistribuirlo y/o modificarlo bajo
-los terminos de la Licencia General Pública de GNU version 3 publicada por la 
+los terminos de la Licencia General Publica de GNU version 3 publicada por la 
 Free Software Foundation.
 
 

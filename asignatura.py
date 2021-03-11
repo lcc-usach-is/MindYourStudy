@@ -131,7 +131,7 @@ def IngresarCrearAsignatura(app, contenido): # falta eliminar los objetos usados
 
     frame2  = tk.Frame(ventana)
     frame2.grid(row=3, column = 0, padx=27, pady=30, sticky="ew")
-    tk.Label(frame2, text = 'Ingrese los datos de la asignatura que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
+    tk.Label(frame2, text = 'Ingresa los datos de la asignatura que desea crear: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=8, padx=10, sticky="w")
     
     # Asignatura
     tk.Label(frame2, text =  'Asignatura(*): ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
@@ -298,7 +298,7 @@ def IngresarModificarAsignatura(app, contenido, ventana, seleccion, rows): # Hay
 
     frame2  = tk.Frame(ventana)
     frame2.grid(row=3, column = 0, padx=29, ipady=5, sticky="ew")
-    tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, padx=5, pady=(5,0), sticky="w")
+    tk.Label(frame2, text = 'Ingresa los datos que desees modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, padx=5, pady=(5,0), sticky="w")
     
     # Asignatura
     tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")
@@ -473,7 +473,7 @@ def EliminarAsignatura(app, contenido, ventana, rows, seleccion):
         messagebox.showinfo(message="Debes seleccionar una asignatura.", title="Mind your Study", parent=ventana)
         return
     
-    respuesta = messagebox.askyesno(message="¿Desea eliminar la asignatura?", title="Eliminar Asignatura", parent = ventana)
+    respuesta = messagebox.askyesno(message="¿Deseas eliminar la asignatura?", title="Eliminar Asignatura", parent = ventana)
 
     if not respuesta:
         return

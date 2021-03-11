@@ -430,7 +430,7 @@ def ElegirCalcularNota(app):
         ventana.iconbitmap(ICON)
         ventana.focus()
 
-        b = tk.Label(ventana, text="Selecciona la asignatura de la nota que desee calcular:",font=("", 18, 'bold'),justify="left")
+        b = tk.Label(ventana, text="Selecciona la asignatura de la nota que desees calcular:",font=("", 18, 'bold'),justify="left")
         b.place(x=30,y=30)
         lista = tk.Listbox(ventana, height=16, width=81,font=("", 13, ""), bg = 'SystemButtonFace')
         lista.place(x=30, y=80)

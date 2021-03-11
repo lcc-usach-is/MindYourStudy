@@ -328,7 +328,7 @@ def IngresarModificarActividad(app, contenido, ventana, seleccion, rows): # Hay 
 
     frame2  = tk.Frame(ventana)
     frame2.grid(row=3, column = 0, padx=30, sticky="we")
-    tk.Label(frame2, text = 'Ingrese los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
+    tk.Label(frame2, text = 'Ingresa los datos que desee modificar: \n', font=("", 15, 'bold'),justify="center",).grid(row = 0, column = 0,columnspan=7, sticky="w")
     
     # Asignatura
     tk.Label(frame2, text =  'Asignatura: ', font=("", 13, 'bold'),justify="left").grid(row = 1, column = 0,sticky="e")

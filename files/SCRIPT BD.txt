@@ -1,5 +1,3 @@
-proyecto ISWI SQLITE
-
 CREATE TABLE "ASIGNATURA" (
 	"ASI_ID"	INTEGER NOT NULL,
 	"ASI_NOM"	TEXT NOT NULL,
@@ -9,15 +7,6 @@ CREATE TABLE "ASIGNATURA" (
 	"ASI_EST"	INTEGER NOT NULL,
 	PRIMARY KEY("ASI_ID" AUTOINCREMENT)
 );
-
-
-INSERT INTO ASIGNATURA VALUES(NULL, "Logica Computacional", "curso LCC", "Ruben Carvajal", "ruben.carvajal@usach.cl", 0);
-INSERT INTO ASIGNATURA VALUES(NULL, "Programacion Avanzada", "Curso LCC del semestre 4", "Nicolas Theriault", "nicolas.theriault@usach.cl", 0);
-INSERT INTO ASIGNATURA VALUES(NULL, "Algoritmos Distribuidos", "Curso LCC del semestre 6", "Ruben Carvajal", "ruben.carvajal@usach.cl", 1);
-INSERT INTO ASIGNATURA VALUES(NULL, "Ingenieria de software I", "Curso LCC del semestre 6", "Dino Araya", "dino.araya@usach.cl", 1);
-INSERT INTO ASIGNATURA VALUES(NULL, "Comunicacion de Computadoras", "Curso LCC del semestre 6", "Juan Cubillos", "juan.cubillos@usach.cl", 1);
-INSERT INTO ASIGNATURA VALUES(NULL, "MBDC", "Curso LCC del semestre 6", "Fredi Palominos", "fredi.palominos@usach.cl", 1);
-INSERT INTO ASIGNATURA VALUES(NULL, "Fundamentos II", "Curso LCC del semestre 6", "Rodrigo Abarzua", "rodrigo.abarzua@usach.cl", 1);
 
 CREATE TABLE "TIPO_BLOQUE" (
 	"BL_ID"		INTEGER NOT NULL,
@@ -85,14 +74,6 @@ CREATE TABLE NOTA (
        		REFERENCES TIPO_NOTA ("TNOT_NOM") 
 );
 
-INSERT INTO NOTA VALUES(NULL,1, "catedra", 6.0);
-INSERT INTO NOTA VALUES(NULL,2, "catedra", 3.1);
-INSERT INTO NOTA VALUES(NULL,3, "catedra", 4.0);
-INSERT INTO NOTA VALUES(NULL,3, "catedra", 3.1);
-INSERT INTO NOTA VALUES(NULL,4, "catedra", 3.9);
-INSERT INTO NOTA VALUES(NULL,4, "catedra", 3.7);
-INSERT INTO NOTA VALUES(NULL,2, "laboratorio", 3.7);
-
 CREATE TABLE PRIORIDAD (
 	"PRI_NIVEL"	INTEGER NOT NULL,
     	"PRI_DESC"	TEXT NOT NULL, 
@@ -131,15 +112,6 @@ CREATE TABLE ACTIVIDAD (
        		REFERENCES TIPO_ACTIVIDAD ("TACT_TIPO")  
 );
 
-INSERT INTO ACTIVIDAD VALUES(NULL, 3, "Entregar trabajo 2", "2021-01-11",NULL, 4, "evaluativa");
-INSERT INTO ACTIVIDAD VALUES(NULL, 3, "Estudiar", "2021-01-11", NULL, 2, "evaluativa");
-INSERT INTO ACTIVIDAD VALUES(NULL, 3, "Estudiar", "2021-01-14", "4pm", 2, "estudio");
-INSERT INTO ACTIVIDAD VALUES(NULL, 4, "Estudiar", "2021-01-14", "6pm", 2, "estudio");
-INSERT INTO ACTIVIDAD VALUES(NULL, 4, "Avance 4", "2021-01-15", "4pm", 2, "estudio");
-INSERT INTO ACTIVIDAD VALUES(NULL, 4, "Presentar avance 4", "2021-01-20", "6pm", 2, "evaluativa");
-INSERT INTO ACTIVIDAD VALUES(NULL, 7, "Avanzar Trabajo Lab 3", "2021-01-18", NULL, 4, "estudio");
-INSERT INTO ACTIVIDAD VALUES(NULL, 5, "Prueba 3", "2021-01-19", "6pm", 4, "evaluativa");
-
 CREATE TABLE TIPO_CONSEJO (
 	"TCON_NOM"	TEXT NOT NULL,
 	"TCON_DESC"	TEXT NOT NULL,
@@ -162,34 +134,33 @@ CREATE TABLE "CONSEJO" (
 	PRIMARY KEY("CON_ID" AUTOINCREMENT)
 );
 
-
-
-
-
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Tus calificaciones son buenas, no te vendria mal un descanso.");
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Muy buenas notas, sigue asi");
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Tus calificaciones son buenas, no te vendría mal un descanso.");
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Muy buenas notas, sigue así");
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionBuena", "Buenas notas, te mereces un buen descanso");
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionAlerta", "Tus calificaciones estan un poco bajas, podrias estudiar unos minutos mas al dia.");
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionAlerta", "Tus notas no son tan buenas, considera dedicar mas tiempo estudiando al dia");
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionAlerta", "Tus calificaciones están un poco bajas, podrías estudiar unos minutos más al día.");
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionAlerta", "Tus notas no son tan buenas, considera dedicar más tiempo estudiando al día");
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionAlerta", "Si tienes problemas con una asignatura considera pedir ayuda a tus compañeros o al ayudante");
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionMedia", "Tus notas estan okay, considera estudiar un poco mas para mejorarlas");
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionMedia", "Tus notas están okay, considera estudiar un poco más para mejorarlas");
 INSERT INTO CONSEJO VALUES(NULL, "recomendacionMedia", "Tus calificaciones son medias, procura no descansar mucho para no bajarlas");
-INSERT INTO CONSEJO VALUES(NULL, "recomendacionMedia", "Tus calificaciones estan bien, recuerda organizar bien tus tiempos para no bajarlas");
+INSERT INTO CONSEJO VALUES(NULL, "recomendacionMedia", "Tus calificaciones están bien, recuerda organizar bien tus tiempos para no bajarlas");
+
 
 INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Recuerda tener una dieta variada de alimentos, incluidas frutas y verduras");
-INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Lo recomendado diario es realizar un minimo de 60 a 90 minutos de actividad fisica");
-INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Podrias realizar una rutina no estructurada como, trabajos de jardín o del hogar que impliquen movimiento");
+INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Lo recomendado diario es realizar un mínimo de 60 a 90 minutos de actividad física");
+INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Podrías realizar una rutina no estructurada como, trabajos de jardín o del hogar que impliquen movimiento");
 INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Camina siempre que puedas, incluso en el patio de tu casa");
 INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "No olvides realizar pausas entre el estudio para moverte o hacer algo");
-INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Podrias realizar actividades relacionadas con la flexibilidad: agacharse, estirarse, girar");
-INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Podrias realizar actividades relacionadas con la coordinación: juegos con pelota, bailar");
+INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Podrías realizar actividades relacionadas con la flexibilidad: agacharse, estirarse, girar");
+INSERT INTO CONSEJO VALUES(NULL, "bienestar_fisico", "Podrías realizar actividades relacionadas con la coordinación: juegos con pelota, bailar");
 
-INSERT INTO CONSEJO VALUES(NULL, "bienestar_mental", "Levantante y acuestate todos los dias a una hora correcta");
+
+INSERT INTO CONSEJO VALUES(NULL, "bienestar_mental", "Levantante y acuéstate todos los días a una hora correcta");
 INSERT INTO CONSEJO VALUES(NULL, "bienestar_mental", "Establece horarios para trabajar y para descansar");
 INSERT INTO CONSEJO VALUES(NULL, "bienestar_mental", "Reserva tiempo para hacer cosas que te gustan");
-INSERT INTO CONSEJO VALUES(NULL, "bienestar_mental", "Controla el tiempo frente a una pantalla (celular, computador, television)");
+INSERT INTO CONSEJO VALUES(NULL, "bienestar_mental", "Controla el tiempo frente a una pantalla (celular, computador, televisión)");
 
-INSERT INTO CONSEJO VALUES(NULL, "estudio", "Explica lo que estás estudiando a alguien, para comporbar si lo entiendes");
+
+INSERT INTO CONSEJO VALUES(NULL, "estudio", "Explica lo que estás estudiando a alguien, para comprobar si lo entiendes");
 INSERT INTO CONSEJO VALUES(NULL, "estudio", "Crea una rutina de estudio");
 INSERT INTO CONSEJO VALUES(NULL, "estudio", "Aprende con tus propias palabras");
 INSERT INTO CONSEJO VALUES(NULL, "estudio", "Proporciónale a tu cerebro el tiempo que necesita para procesar la información");
@@ -199,12 +170,13 @@ INSERT INTO CONSEJO VALUES(NULL, "estudio", "Evita distracciones al estudiar, po
 INSERT INTO CONSEJO VALUES(NULL, "estudio", "Resuelve tus dudas comunicándote con tus compañeros o profesor");
 INSERT INTO CONSEJO VALUES(NULL, "estudio", "Proponte metas diarias");
 
+
 INSERT INTO CONSEJO VALUES(NULL, "covid", "Si vas a salir guarda al menos 1 metro de distancia entre otras personas");
 INSERT INTO CONSEJO VALUES(NULL, "covid", "Lavate las manos antes de ponerse la mascarilla, y también antes y después de quitársela y cada vez que la toques");
 INSERT INTO CONSEJO VALUES(NULL, "covid", "Asegurate de que la mascarilla te cubre la nariz, la boca y el mentón");
 INSERT INTO CONSEJO VALUES(NULL, "covid", "Lavate periódica y cuidadosamente las manos con un gel hidroalcohólico o con agua y jabón");
 INSERT INTO CONSEJO VALUES(NULL, "covid", "Evita tocarse los ojos, la nariz y la boca");
-INSERT INTO CONSEJO VALUES(NULL, "covid", "Al toser o estornudar cubrete la boca y la nariz con el codo flexionado o con un pañuelo");
+INSERT INTO CONSEJO VALUES(NULL, "covid", "Al toser o estornudar cúbrete la boca y la nariz con el codo flexionado o con un pañuelo");
 INSERT INTO CONSEJO VALUES(NULL, "covid", "Limpia y desinfecta frecuentemente las superficies, en particular las que se tocan con regularidad");
 
 
@@ -214,7 +186,7 @@ CREATE TABLE "VERSION" (
 	PRIMARY KEY("VERSION_NUM")
 );
 
-INSERT INTO VERSION VALUES("1.0", "2021-02-05");
+INSERT INTO VERSION VALUES("1.0", "2021-03-12");
 
 CONSULTA ASIGNATURAS ACTIVAS
 
@@ -286,10 +258,10 @@ WITH A as (SELECT  	ASI_NOM as asig,
 					AND ASI_ID = ACT_ID_ASI
 					AND diasFaltantes BETWEEN 0 AND PRI_CANT)
 SELECT "Tienes una actividad de "||A.asig||(CASE 	
-												WHEN diasFaltantes = 0 THEN " hoy."
-												WHEN diasFaltantes = 1 THEN " en 1 dia."
-												ELSE " en "||A.diasFaltantes||" dias."
-												END) as Salida,
+						WHEN diasFaltantes = 0 THEN " hoy."
+						WHEN diasFaltantes = 1 THEN " en 1 dia."
+						ELSE " en "||A.diasFaltantes||" dias."
+					END) as Salida,
 		A.cantidadNotificaciones as Notificaciones
 FROM A 
 
@@ -339,11 +311,10 @@ def NotificarActividad():
 				 )
  		SELECT
  			"Tienes una actividad de " || A.asig ||(CASE
- 														WHEN diasFaltantes = 0
-															THEN " hoy."
-														WHEN diasFaltantes = 1
-															THEN " en 1 dia."
-														ELSE " en " || A.diasFaltantes || " dias."
-													END)
- 		FROM A
+ 								WHEN diasFaltantes = 0
+									THEN " hoy."
+								WHEN diasFaltantes = 1
+									THEN " en 1 dia."
+								ELSE " en " || A.diasFaltantes || " dias."
+								END) FROM A
  return act

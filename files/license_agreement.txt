@@ -1,0 +1,29 @@
+<Mind your Study>
+Copyright (C) <2021> <LCC Equipo 1>
+
+Este programa es software libre: puede redistribuirlo y/o modificarlo bajo
+los terminos de la Licencia General Pública de GNU version 3 publicada por la 
+Free Software Foundation.
+
+
+Este programa se distribuye con la esperanza de que sea util pero SIN
+NINGUNA GARANTIA; incluso sin la garantia implicita de MERCANTIBILIDAD o
+CALIFICADA PARA UN PROPOSITO EN PARTICULAR. Vea la Licencia General Publica
+de GNU para mas detalles.
+
+
+Usted ha debido de recibir una copia de la Licencia General Pública
+de GNU junto con este programa. Para mas informacion, vea
+<https://raw.githubusercontent.com/lcc-usach-is/MindYourStudy/main/files/LICENSE>.
+
+
+POLITICAS DE PRIVACIDAD
+
+Mind your Study  es una aplicacion local sin necesidad de
+una conexion a internet, con el fin de ayudar a organizar y
+facilitar el dia a dia de los estudiantes universitarios.
+
+
+Por lo tanto toda la informacion que ingreses se guardara en 
+tu dispositivo y nunca sera usada por terceros.
+

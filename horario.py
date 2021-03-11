@@ -110,7 +110,7 @@ def IngresarBloque(app, contenido):
 
         # Lista Asignaturas
         
-        b = tk.Label(ventana, text = ' Seleccione la asignatura del bloque a crear:', font=("", 15, 'bold'),justify="left")
+        b = tk.Label(ventana, text = ' Selecciona la asignatura del bloque a crear:', font=("", 15, 'bold'),justify="left")
         b.place(x=30,y=30)
 
         lista = tk.Listbox(ventana, height=11, width=81,font=("", 12, ""), bg = 'SystemButtonFace')

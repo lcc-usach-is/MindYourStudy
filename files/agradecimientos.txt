@@ -1,0 +1,5 @@
+Gracias por escoger Mind your Study!
+
+La aplicacion se instalara en el siguiente directorio:
+
+C:\Usuarios\Acceso Publico\Mind your Study

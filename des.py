@@ -102,7 +102,7 @@ def NotificarActividad():
                     WITH A AS (
                         SELECT
                             ASI_NOM AS asig,
-                            (strftime('%d', ACTIVIDAD.ACT_FECHA) - strftime('%d', DATE('now'))) as diasFaltantes,
+                            (strftime('%j', ACTIVIDAD.ACT_FECHA) - strftime('%j', DATE('now'))) as diasFaltantes,
 							ACT_TIPO as tipo,
 							ACT_FECHA as fecha
                         FROM

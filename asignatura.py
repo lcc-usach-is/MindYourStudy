@@ -480,7 +480,7 @@ def EliminarAsignatura(app, contenido, ventana, rows, seleccion):
     
     k = rows[seleccion[0]]
 
-     bloques_eliminar  = list(RunQuery("SELECT BL_ID, BL_DIA_SEM FROM BLOQUE WHERE BL_ID_ASI = '"+ str(k[0]) +"'"))
+    bloques_eliminar = list(RunQuery("SELECT BL_ID, BL_DIA_SEM FROM BLOQUE WHERE BL_ID_ASI = '"+ str(k[0]) +"'"))
 
     GestionAsignatura('E', None, (k[0],), None) # Eliminamos asignatura
 

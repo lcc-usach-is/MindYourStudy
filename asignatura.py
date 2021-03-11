@@ -107,11 +107,11 @@ def DatosAsignatura(frame, asig_nom):
     b.grid(row = 2, column = 0, pady=5, sticky="w")
     buttons_ventana.append(b)
     # Profesor
-    b = tk.Label(frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left")
+    b = tk.Label(frame, text =  'Profesor/a: ' + k[3], font=("", 13, 'bold'),justify="left")
     b.grid(row = 3, column = 0, pady=5, sticky="w" )
     buttons_ventana.append(b)
     # Correo Profesor
-    b = tk.Label(frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left")
+    b = tk.Label(frame, text =  'Correo Profesor/a: ' + k[4], font=("", 13, 'bold'),justify="left")
     b.grid(row = 4, column = 0, pady=5, sticky="w")
     buttons_ventana.append(b)
 
@@ -142,11 +142,11 @@ def IngresarCrearAsignatura(app, contenido): # falta eliminar los objetos usados
     descripcion = tk.Entry(frame2)
     descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)  
     # Nombre profesor
-    tk.Label(frame2, text =  'Nombre profesor(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0, padx=(10,0), sticky="e" )
+    tk.Label(frame2, text =  'Nombre profesor/a(*): ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0, padx=(10,0), sticky="e" )
     nom_profesor = tk.Entry(frame2 )
     nom_profesor.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
     # correo profesor
-    tk.Label(frame2, text =  'Correo profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
+    tk.Label(frame2, text =  'Correo profesor/a: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0,sticky="e")
     mail_profesor = tk.Entry(frame2)
     mail_profesor.grid(row = 4, column = 1, columnspan=3, ipadx = 120)
 
@@ -196,7 +196,7 @@ def CrearAsignatura(app, contenido, ventana, parameters): # Falta verificar que 
     if parameters[2] != '':
         nom_profesor = parameters[2] 
     else:
-        messagebox.showinfo(message="Debes ingresar el nombre del/la profesor/ra.", title="Mind your Study", parent=ventana)
+        messagebox.showinfo(message="Debes ingresar el nombre del/la profesor/a.", title="Mind your Study", parent=ventana)
         return
     
     #Mail profesor
@@ -288,9 +288,9 @@ def IngresarModificarAsignatura(app, contenido, ventana, seleccion, rows): # Hay
     # Descripcion antigua
     tk.Label(scrollable_frame, text =  'Descripcion: ' + k[2], font=("", 13, 'bold'),justify="left").grid(row = 2, column = 0, padx=5, sticky="w")
     # Nombre profesor
-    tk.Label(scrollable_frame, text =  'Profesor: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0, padx=5, sticky="w" )
+    tk.Label(scrollable_frame, text =  'Profesor/a: ' + k[3], font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0, padx=5, sticky="w" )
     # Correo profesor
-    tk.Label(scrollable_frame, text =  'Correo Profesor: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=5, sticky="w")
+    tk.Label(scrollable_frame, text =  'Correo Profesor/a: ' + k[4], font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=5, sticky="w")
     
     container.grid(row=1, column = 0, padx=29, pady=20,ipadx=125)
     canvas.pack(side="top", fill="x")
@@ -309,11 +309,11 @@ def IngresarModificarAsignatura(app, contenido, ventana, seleccion, rows): # Hay
     nueva_descripcion = tk.Entry(frame2 )
     nueva_descripcion.grid(row = 2, column = 1, columnspan=3, ipadx = 120)
     # Nombre profesor
-    tk.Label(frame2, text =  'Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
+    tk.Label(frame2, text =  'Profesor/a: ' , font=("", 13, 'bold'),justify="left").grid(row = 3, column = 0,sticky="e")
     nuevo_profesor = tk.Entry(frame2 )
     nuevo_profesor.grid(row = 3, column = 1, columnspan=3, ipadx = 120)
     # Correo profesor 
-    tk.Label(frame2, text =  'Correo Profesor: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=(10,0), sticky="e")
+    tk.Label(frame2, text =  'Correo Profesor/a: ' , font=("", 13, 'bold'),justify="left").grid(row = 4, column = 0, padx=(10,0), sticky="e")
     nuevo_correo = tk.Entry(frame2 )
     nuevo_correo.grid(row = 4, column = 1, columnspan=3, ipadx = 120)  
 

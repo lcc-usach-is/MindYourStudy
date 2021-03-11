@@ -57,19 +57,22 @@ def VentanaAbout(app):
     ttk.Label(tab1, text ="Licencia:").grid(column = 0,row = 3,padx = 5,pady = 10, sticky="e")
     link2 = tk.Label(tab1, text ="GNU General Public License v3.0", fg = 'blue', cursor="hand2")
     link2.grid(column = 1,row = 3,padx = 0,pady = 10, sticky="w")
-    link2.bind("<Button-1>", lambda e: callback("https://raw.githubusercontent.com/lcc-usach-is/MindYourStudy/main/LICENSE"))
+    link2.bind("<Button-1>", lambda e: callback(r"file://C:\Users\Public\Mind your Study\files\LICENSE.txt"))
 
     #### TAB DOCUMENTACION ####
 
     #fuente consejos
     link3 = tk.Label(tab2, text ="- Bibliografia de consejos", fg = 'blue', cursor="hand2")
     link3.grid(column=0, row=0 ,padx =20, pady = 20, sticky="w")
-    link3.bind("<Button-1>", lambda e: callback("https://github.com/lcc-usach-is/MindYourStudy/blob/main/files/consejos_source.txt"))
+    link3.bind("<Button-1>", lambda e: callback(r"file://C:\Users\Public\Mind your Study\files\consejos_source.txt"))
 
     #Manual de usuario
     link4 = tk.Label(tab2, text ="- Manual de usuario", fg = 'blue', cursor="hand2")
     link4.grid(column=0, row=1 ,padx =20, pady = 20, sticky="w")
-    link4.bind("<Button-1>", lambda e: callback("https://github.com/lcc-usach-is/MindYourStudy"))
+    link4.bind("<Button-1>", lambda e: callback(r"file://C:\Users\Public\Mind your Study\files\manual_usuario.pdf"))
+
+    #lb = tk.Label(tab2, text ="En caso de no tener una conexion a internet, puedes encontrar la documentación en el siguiente directorio")
+    #lb.grid(column=0, row=2 ,padx =20, pady = 10, sticky="w")
 
     #boton de confirmacion para cerrar la ventana
     a = tk.Button(ventana, text="OK", command = ventana.destroy, relief = tk.SOLID, bd=1, padx=10)

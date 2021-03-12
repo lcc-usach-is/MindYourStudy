@@ -35,7 +35,7 @@ _Los requisitos mínimos del software son_
 * **Pedro Peña** - pedro.pena.m@usach.cl
 * **Vicente Solis** - vicente.solis@usach.cl
 
-También puedes mirar la lista de todos los [contribuyentes](https://github.com/lcc-usach-is/MindYourStudy/graphs/contributors) quíenes han participado en este proyecto. 
+También puedes mirar la lista de todos los [contribuyentes](https://github.com/lcc-usach-is/MindYourStudy/graphs/contributors) quiénes han participado en este proyecto. 
 
 ## Licencia 📄
 

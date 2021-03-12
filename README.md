@@ -33,7 +33,7 @@ _Los requisitos mínimos del software son_
 * [Tkinter](https://docs.python.org/es/3/library/tk.html) - Librería para interfaz gráfica.
 * [SQLite3](https://www.sqlite.org/index.html) - Manejador de base de datos.
 * [Pillow](https://github.com/python-pillow/Pillow) - Python Imaging Library
-* [win10toast] (https://github.com/jithurjacob/Windows-10-Toast-Notifications) - Windows 10 Toast Notifications para Python
+* [win10toast](https://github.com/jithurjacob/Windows-10-Toast-Notifications) - Windows 10 Toast Notifications para Python
 
 ## Autores ✒️
 

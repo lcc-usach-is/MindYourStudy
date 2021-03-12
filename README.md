@@ -4,7 +4,7 @@ Aplicación de Windows 10 para ayudar a los estudiantes universitarios a organiz
 
 ## Comenzando 🚀
 
-_Para obtener la última versión del software, ingresa [aqui](https://www.mediafire.com/file/jmbz6bs98hx4135/MindYourStudy_Setup.exe/file)_
+_Para obtener la última versión del software ve a la sección [RELEASES](https://github.com/lcc-usach-is/MindYourStudy/releases)
 
 ### Pre-requisitos 📋
 

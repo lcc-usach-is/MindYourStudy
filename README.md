@@ -8,7 +8,7 @@ _Para obtener la ultima version del software, ingresa [aqui](https://www.mediafi
 
 ### Pre-requisitos 📋
 
-_Los requisitos mínimos del del software son_
+_Los requisitos mínimos del software son_
 
 |     |     |
 | --- | --- |

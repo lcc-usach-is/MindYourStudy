@@ -30,7 +30,7 @@ _Los requisitos mínimos del software son_
 
 ## Autores ✒️
 
-* **Felipe Canales** - felipe.canales@usach.cl
+* **Felipe Canales** - felipe.canales.c@usach.cl
 * **David Dalenz** - david.dalenz@usach.cl
 * **Pedro Peña** - pedro.pena.m@usach.cl
 * **Vicente Solis** - vicente.solis@usach.cl

@@ -4,7 +4,7 @@ Aplicación de Windows 10 para ayudar a los estudiantes universitarios a organiz
 
 ## Comenzando 🚀
 
-_Para obtener la última versión del software ve a la sección [RELEASES](https://github.com/lcc-usach-is/MindYourStudy/releases)
+_Para obtener la última versión del software ve a la sección [RELEASES](https://github.com/lcc-usach-is/MindYourStudy/releases) y haz click en el archivo .exe_
 
 ### Pre-requisitos 📋
 

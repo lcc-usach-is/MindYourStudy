@@ -22,11 +22,18 @@ _Los requisitos mínimos del software son_
 * Ejecutar el instalador siguiendo todos los pasos necesarios.
 * Ejecutar la aplicación.
 
+### Ejecutar código fuente
+
+* Usar pip para instalar las dependencias: Pillow y win10toast.
+* Correr app.py
+
 ## Construido con 🛠️
 
 * [Python 3.9](https://www.python.org) - Lenguaje de programación.
 * [Tkinter](https://docs.python.org/es/3/library/tk.html) - Librería para interfaz gráfica.
 * [SQLite3](https://www.sqlite.org/index.html) - Manejador de base de datos.
+* [Pillow](https://github.com/python-pillow/Pillow) - Python Imaging Library
+* [win10toast] (https://github.com/jithurjacob/Windows-10-Toast-Notifications) - Windows 10 Toast Notifications para Python
 
 ## Autores ✒️
 

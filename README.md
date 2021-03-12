@@ -25,7 +25,7 @@ _Los requisitos mínimos del software son_
 ## Construido con 🛠️
 
 * [Python 3.9](https://www.python.org) - Lenguaje de programación.
-* [Tkinter](https://docs.python.org/es/3/library/tk.html) - Libreria para interfaz gráfica.
+* [Tkinter](https://docs.python.org/es/3/library/tk.html) - Librería para interfaz gráfica.
 * [SQLite3](https://www.sqlite.org/index.html) - Manejador de base de datos.
 
 ## Autores ✒️

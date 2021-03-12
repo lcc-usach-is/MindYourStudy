@@ -1,6 +1,6 @@
 # Mind your Study
 
-Aplicacion de Windows 10 para ayudar a los estudiantes universitarios a organizar sus estudios
+Aplicacion de Windows 10 para ayudar a los estudiantes universitarios a organizar sus estudios.
 
 ## Comenzando 🚀
 
@@ -18,15 +18,15 @@ _Los requisitos mínimos del del software son_
 
 ### Instalación 🔧
 
-* Obtener el ejecutable encargado de instalar el programa, por medio de la página del software
+* Obtener el ejecutable encargado de instalar el programa, por medio de la página del software.
 * Ejecutar el instalador siguiendo todos los pasos necesarios.
 * Ejecutar la aplicación.
 
 ## Construido con 🛠️
 
-* [Python 3.9](https://www.python.org) - Lenguaje de programación
-* [Tkinter](https://docs.python.org/es/3/library/tk.html) - Libreria para interfaz grafica
-* [SQLite3](https://www.sqlite.org/index.html) - Manejador de base de datos
+* [Python 3.9](https://www.python.org) - Lenguaje de programación.
+* [Tkinter](https://docs.python.org/es/3/library/tk.html) - Libreria para interfaz grafica.
+* [SQLite3](https://www.sqlite.org/index.html) - Manejador de base de datos.
 
 ## Autores ✒️
 
